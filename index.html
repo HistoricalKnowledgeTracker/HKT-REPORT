@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+	<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore-compat.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historical Knowledge Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+/* ====== CUTE THEMED CURSORS ====== */
+body, .login-wrap{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2730%27 height=%2730%27 viewBox=%270 0 30 30%27><path d=%27M15 1 L18.3 11.7 L29 15 L18.3 18.3 L15 29 L11.7 18.3 L1 15 L11.7 11.7 Z%27 fill=%27%237F77DD%27 stroke=%27%23ffffff%27 stroke-width=%271.4%27 stroke-linejoin=%27round%27/><circle cx=%2724%27 cy=%276%27 r=%272.4%27 fill=%27%23F0997B%27 stroke=%27%23ffffff%27 stroke-width=%271%27/></svg>') 6 6, auto;
+}
+a, button, .btn, .icon-btn, .user-opt, .user-card, .month-nav .icon-btn,
+input[type="checkbox"], input[type="radio"], select, .drop-zone, .modal-overlay .btn,
+[onclick]{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2730%27 height=%2732%27 viewBox=%270 0 30 32%27><g fill=%27%23FBDFC0%27 stroke=%27%23D4537E%27 stroke-width=%271.4%27 stroke-linejoin=%27round%27 stroke-linecap=%27round%27><path d=%27M11 30 C8.5 30 7 28.4 6.5 26.6 L3.6 16.4 C3.2 15 4 13.6 5.4 13.3 C6.6 13 7.8 13.6 8.3 14.7 L9.5 17.2 L9.5 5.4 C9.5 3.9 10.7 2.7 12.2 2.7 C13.7 2.7 14.9 3.9 14.9 5.4 L14.9 13.6 C15.3 13.3 15.8 13.1 16.4 13.1 C17.7 13.1 18.8 14 19 15.2 C19.5 14.6 20.2 14.2 21 14.2 C22.5 14.2 23.7 15.4 23.7 16.9 L23.7 17.6 C24.1 17.4 24.6 17.2 25.1 17.2 C26.6 17.2 27.8 18.4 27.8 19.9 L27.8 25.4 C27.8 28 25.7 30 23.1 30 Z%27/></g><g fill=%27%23F0997B%27><circle cx=%2724%27 cy=%276%27 r=%272%27/><circle cx=%2728%27 cy=%2710%27 r=%271.2%27/></g></svg>') 8 4, pointer;
+}
+.nav-item{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2728%27 height=%2728%27 viewBox=%270 0 28 28%27><g fill=%27%23F0997B%27 stroke=%27%23ffffff%27 stroke-width=%271.2%27 stroke-linejoin=%27round%27><circle cx=%2714%27 cy=%2714%27 r=%274.6%27/><path d=%27M14 1 L16 7 L14 11 L12 7 Z%27/><path d=%27M14 27 L16 21 L14 17 L12 21 Z%27/><path d=%27M1 14 L7 12 L11 14 L7 16 Z%27/><path d=%27M27 14 L21 16 L17 14 L21 12 Z%27/></g></svg>') 14 14, pointer;
+}
+input[type="text"], input[type="date"], input[type="number"], input[type="password"], textarea{
+  cursor:url('data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2722%27 height=%2728%27 viewBox=%270 0 22 28%27><rect x=%279%27 y=%272%27 width=%274%27 height=%2724%27 rx=%272%27 fill=%27%237F77DD%27 stroke=%27%23ffffff%27 stroke-width=%271.2%27/><circle cx=%2711%27 cy=%272%27 r=%272.6%27 fill=%27%23F0997B%27 stroke=%27%23ffffff%27 stroke-width=%271%27/><circle cx=%2711%27 cy=%2726%27 r=%272.6%27 fill=%27%23F0997B%27 stroke=%27%23ffffff%27 stroke-width=%271%27/></svg>') 11 14, text;
+}
+
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#fce4ec,#f3e5f5,#ede7f6);color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow-x:hidden;overflow-y:auto}
+body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 200'%3E%3Cpath d='M0,100 Q360,40 720,100 T1440,100 V200 H0 Z' fill='%23D4537E' opacity='0.10'/%3E%3Cpath d='M0,130 Q360,80 720,130 T1440,130 V200 H0 Z' fill='%237F77DD' opacity='0.12'/%3E%3C/svg%3E") bottom no-repeat;background-size:cover;pointer-events:none;z-index:0}
+
+/* ====== FULL-PAGE BACKGROUND ANIMATION ====== */
+.page-bg{position:fixed;inset:0;width:100%;height:100%;overflow:hidden;z-index:0;pointer-events:none}
+@keyframes pbgDriftA{0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}50%{transform:translate(40px,55px) scale(1.12) rotate(8deg)}}
+@keyframes pbgDriftB{0%,100%{transform:translate(0,0) scale(1.05) rotate(0deg)}50%{transform:translate(-50px,-35px) scale(.92) rotate(-10deg)}}
+@keyframes pbgDriftC{0%,100%{transform:translate(0,0) scale(1) rotate(0deg);opacity:.45}50%{transform:translate(-35px,45px) scale(1.18) rotate(6deg);opacity:.65}}
+@keyframes pbgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-25px)}}
+.pbg-blob{position:absolute;border-radius:50%;filter:blur(0.5px)}
+.pbg-blob.pbg-b1{width:340px;height:340px;top:-90px;left:-100px;background:radial-gradient(circle at 35% 35%,#C9C2F2,#7F77DD 65%,transparent 100%);opacity:.30;animation:pbgDriftA 22s ease-in-out infinite}
+.pbg-blob.pbg-b2{width:260px;height:260px;top:55%;left:-80px;background:radial-gradient(circle at 35% 35%,#F4B9CF,#D4537E 65%,transparent 100%);opacity:.26;animation:pbgDriftB 26s ease-in-out infinite}
+.pbg-blob.pbg-b3{width:300px;height:300px;top:-60px;right:-90px;background:radial-gradient(circle at 35% 35%,#FBD3BE,#F0997B 65%,transparent 100%);opacity:.28;animation:pbgDriftC 20s ease-in-out infinite}
+.pbg-blob.pbg-b4{width:220px;height:220px;bottom:-60px;right:-50px;background:radial-gradient(circle at 35% 35%,#C9C2F2,#7F77DD 65%,transparent 100%);opacity:.24;animation:pbgDriftB 24s ease-in-out infinite}
+.pbg-blob.pbg-b5{width:150px;height:150px;top:35%;right:18%;background:radial-gradient(circle at 35% 35%,#F4B9CF,#D4537E 65%,transparent 100%);opacity:.20;animation:pbgFloat 12s ease-in-out infinite}
+.pbg-blob.pbg-b6{width:120px;height:120px;top:12%;left:30%;background:radial-gradient(circle at 35% 35%,#FBD3BE,#F0997B 65%,transparent 100%);opacity:.18;animation:pbgFloat 15s ease-in-out infinite 1.5s}
+.pbg-waves{position:absolute;bottom:0;left:0;width:100%;height:55%}
+@keyframes pbgWaveShift1{0%,100%{transform:translateX(0)}50%{transform:translateX(-40px)}}
+@keyframes pbgWaveShift2{0%,100%{transform:translateX(0)}50%{transform:translateX(35px)}}
+.pbg-wave.w1{animation:pbgWaveShift1 14s ease-in-out infinite}
+.pbg-wave.w2{animation:pbgWaveShift2 18s ease-in-out infinite}
+.pbg-wave.w3{animation:pbgWaveShift1 22s ease-in-out infinite}
+@keyframes pbgRise{0%{transform:translate(0,0) scale(1);opacity:0}10%{opacity:.85}50%{opacity:.55}90%{opacity:0}100%{transform:translate(var(--dx,10px),-105vh) scale(.7);opacity:0}}
+.pbg-firefly{position:absolute;border-radius:50%;bottom:-10px;animation:pbgRise linear infinite}
+
+.app{display:flex;height:100vh;overflow:hidden;background:transparent;position:relative;z-index:1}
+
+/* Sidebar */
+.sidebar{width:210px;background:#fff;border-right:1px solid #e8e8e4;display:flex;flex-direction:column;flex-shrink:0;position:relative;overflow:hidden;z-index:10}
+.sidebar-art{position:absolute;top:0;left:0;right:0;bottom:0;overflow:hidden;z-index:0;pointer-events:none}
+@keyframes sbDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(14px,18px) scale(1.15)}}
+@keyframes sbDrift2{0%,100%{transform:translate(0,0) scale(1.05)}50%{transform:translate(-12px,-10px) scale(.9)}}
+@keyframes sbDrift3{0%,100%{transform:translate(0,0) scale(1);opacity:.5}50%{transform:translate(-10px,14px) scale(1.2);opacity:.8}}
+.sb-blob{position:absolute;border-radius:50%}
+.sb-blob.b1{width:110px;height:110px;top:-30px;left:-40px;background:radial-gradient(circle at 35% 35%,#A89AE8,#7F77DD 70%,transparent 100%);opacity:.5;animation:sbDrift1 10s ease-in-out infinite}
+.sb-blob.b2{width:95px;height:95px;top:230px;left:110px;background:radial-gradient(circle at 35% 35%,#ED93B1,#D4537E 70%,transparent 100%);opacity:.42;animation:sbDrift2 12s ease-in-out infinite}
+.sb-blob.b3{width:80px;height:80px;top:420px;left:-25px;background:radial-gradient(circle at 35% 35%,#F6BFA4,#F0997B 70%,transparent 100%);opacity:.42;animation:sbDrift3 9s ease-in-out infinite}
+.sb-blob.b4{width:65px;height:65px;top:90px;left:140px;background:radial-gradient(circle at 35% 35%,#F4C0D1,#ED93B1 70%,transparent 100%);opacity:.32;animation:sbDrift2 14s ease-in-out infinite}
+@keyframes sbRise{0%{transform:translate(0,0);opacity:0}12%{opacity:.9}55%{opacity:.65}90%{opacity:0}100%{transform:translate(var(--dx,8px),-100vh);opacity:0}}
+.sb-firefly{position:absolute;border-radius:50%;bottom:0;animation:sbRise linear infinite}
+.sidebar-bg{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.sidebar .logo,.sidebar .nav,.sidebar .user-area{position:relative;z-index:1}
+.logo{padding:20px 16px 14px;border-bottom:1px solid #e8e8e4}
+.logo-title{font-size:15px;font-weight:600;color:#1a1a1a;display:flex;align-items:center;gap:8px}
+.logo-icon{width:28px;height:28px;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;letter-spacing:0.5px}
+.logo-sub{font-size:11px;color:#999;margin-top:3px}
+@keyframes hktMarquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes hktShimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+.hkt-subtitle-track{overflow:hidden;position:relative;display:block}
+.hkt-subtitle-track::before,.hkt-subtitle-track::after{content:'';position:absolute;top:0;bottom:0;width:14px;z-index:2;pointer-events:none}
+.hkt-subtitle-track::before{left:0;background:linear-gradient(90deg,#fff,transparent)}
+.hkt-subtitle-track::after{right:0;background:linear-gradient(270deg,#fff,transparent)}
+.hkt-subtitle-scroll{display:inline-flex;white-space:nowrap;animation:hktMarquee 9s linear infinite;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#534AB7;-webkit-text-stroke:0.3px #3C3489}
+.hkt-subtitle-scroll span{padding-right:28px;background:linear-gradient(90deg,#534AB7,#993556,#D85A30,#534AB7);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:hktShimmer 3s linear infinite}
+.nav{padding:12px 8px;flex:1;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;cursor:pointer;font-size:13px;color:#666;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;transition:all 0.15s}
+.nav-item:hover{background:#f0f0ea;color:#1a1a1a}
+.nav-item.active{background:#EBF3FB;color:#185FA5;font-weight:600}
+.nav-icon{font-size:16px;width:18px;text-align:center}
+.nav-icon-svg{flex-shrink:0;vertical-align:middle}
+.user-area{padding:12px 8px;border-top:1px solid #e8e8e4}
+.user-card{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;cursor:pointer}
+.user-card:hover{background:#f0f0ea}
+.avatar{width:30px;height:30px;border-radius:50%;background:#EBF3FB;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#185FA5;flex-shrink:0}
+.user-name{font-size:13px;font-weight:500}
+.user-role{font-size:11px;color:#999}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.topbar{background:#fff;border-bottom:1px solid #e8e8e4;padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative;z-index:2}
+.page-title{font-size:15px;font-weight:600;display:inline-block}
+.page-title span{display:inline-block;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0}
+@keyframes titleLetterPop{
+  0%{opacity:0;transform:translateY(10px) rotate(-14deg) scale(0.6)}
+  60%{opacity:1;transform:translateY(-3px) rotate(6deg) scale(1.06)}
+  100%{opacity:1;transform:translateY(0) rotate(0deg) scale(1)}
+}
+.topbar-actions{display:flex;gap:8px}
+.btn{padding:7px 14px;border-radius:7px;font-size:13px;cursor:pointer;border:1px solid #ddd;background:#fff;color:#1a1a1a;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;font-family:inherit}
+.btn:hover{background:#f5f5f0;border-color:#bbb}
+.btn.primary{background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);color:#fff;border-color:transparent}
+.btn.primary:hover{background:linear-gradient(135deg,#6A61D1,#C13D6B,#E8835F)}
+.btn.danger{color:#A32D2D;border-color:#F7C1C1}
+.btn.danger:hover{background:#FCEBEB}
+.content{flex:1;overflow-y:auto;padding:20px;position:relative;z-index:1}
+.page{display:none}
+.page.active{display:block}
+
+/* ====== PAGE / MENU SWITCH TRANSITION EFFECT ====== */
+@keyframes pageEnter{
+  0%{opacity:0;transform:translateY(16px) scale(.98)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+.page.active{animation:pageEnter .45s cubic-bezier(0.22,1,0.36,1)}
+@keyframes blockEnter{
+  0%{opacity:0;transform:translateY(14px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.page.active > .stats-grid > .stat-card,
+.page.active > .section,
+.page.active > .two-col > .section{
+  animation:blockEnter .5s cubic-bezier(0.22,1,0.36,1) backwards;
+}
+.page.active > .stats-grid > .stat-card:nth-child(1){animation-delay:.02s}
+.page.active > .stats-grid > .stat-card:nth-child(2){animation-delay:.08s}
+.page.active > .stats-grid > .stat-card:nth-child(3){animation-delay:.14s}
+.page.active > .stats-grid > .stat-card:nth-child(4){animation-delay:.20s}
+.page.active > .section:nth-of-type(1),
+.page.active > #admin-owner-section{animation-delay:.10s}
+.page.active > .section:nth-of-type(2){animation-delay:.16s}
+.page.active > .section:nth-of-type(3){animation-delay:.22s}
+.page.active > .two-col > .section:nth-child(1){animation-delay:.18s}
+.page.active > .two-col > .section:nth-child(2){animation-delay:.24s}
+.page.active > .filter-row{animation:blockEnter .4s cubic-bezier(0.22,1,0.36,1) backwards;animation-delay:.04s}
+@keyframes rowFadeIn{
+  0%{opacity:0;transform:translateY(6px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+.table tbody tr{animation:rowFadeIn .32s ease backwards}
+.table tbody tr:nth-child(n+1){animation-delay:calc(var(--ri,0) * 0.025s)}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(124,77,255,0.06);display:flex;align-items:center;gap:12px}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:0.15}
+.stat-card.c1::before{background:#7F77DD}
+.stat-card.c2::before{background:#185FA5}
+.stat-card.c3::before{background:#3B6D11}
+.stat-card.c4::before{background:#F0997B}
+.stat-icon-svg{flex-shrink:0;position:relative;z-index:1}
+.stat-text{flex:1;min-width:0;position:relative;z-index:1}
+.stat-label{font-size:12px;color:#888;margin-bottom:4px}
+.stat-value{font-size:24px;font-weight:600;color:#1a1a1a}
+.stat-value.c1{background:linear-gradient(135deg,#7F77DD,#A89AE8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-value.c2{background:linear-gradient(135deg,#185FA5,#5AA0DC);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-value.c3{background:linear-gradient(135deg,#3B6D11,#7BAE3F);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-value.c4{background:linear-gradient(135deg,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-sub{font-size:11px;color:#aaa;margin-top:3px}
+
+/* Section */
+.section{background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:16px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(124,77,255,0.06)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-size:14px;font-weight:600;color:#1a1a1a;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-flex;align-items:center;gap:6px}
+
+/* Table */
+.table{width:100%;border-collapse:collapse;font-size:13px}
+.table th{text-align:left;padding:8px 10px;color:#888;font-weight:500;font-size:12px;border-bottom:1px solid #f0f0ea;white-space:nowrap}
+.table td{padding:10px 10px;border-bottom:1px solid #f5f5f0;color:#4A3B68;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:#fafaf8}
+
+/* Badge */
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:#EAF3DE;color:#3B6D11}
+.badge-amber{background:#FAEEDA;color:#854F0B}
+.badge-blue{background:#EBF3FB;color:#185FA5}
+.badge-red{background:#FCEBEB;color:#A32D2D}
+
+/* Filter */
+.filter-row{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filter-row input,.filter-row select{font-size:13px;padding:7px 10px;border-radius:7px;border:1px solid #ddd;background:#fff;color:#1a1a1a;height:34px;font-family:inherit}
+.filter-row input:focus,.filter-row select:focus{outline:none;border-color:#185FA5}
+
+/* Form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:12px;color:#666;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;font-size:13px;padding:8px 10px;border-radius:7px;border:1px solid #ddd;background:#fff;color:#1a1a1a;font-family:inherit;transition:border 0.15s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#185FA5}
+.form-group textarea{min-height:80px;resize:vertical}
+.time-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* Mini stat */
+.mini-stat-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f5f5f0;font-size:13px}
+.mini-stat-row:last-child{border-bottom:none}
+.mini-stat-row .label{color:#666}
+.mini-stat-row .value{font-weight:600;color:#1a1a1a}
+#client-stats .mini-stat-row .label,
+#client-stats .mini-stat-row .value,
+#client-hours .mini-stat-row .label,
+#client-hours .mini-stat-row .value{
+  background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-weight:700;
+}
+
+/* Bar chart */
+.chart-wrap{display:flex;align-items:flex-end;gap:6px;height:120px;padding:4px 0}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{width:100%;background:#185FA5;border-radius:3px 3px 0 0;min-height:3px;transition:height 0.3s}
+.bar-lbl{font-size:10px;color:#aaa}
+.bar-cnt{font-size:10px;color:#185FA5;font-weight:600}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:12px;border:1px solid #e8e8e4;padding:24px;width:520px;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:18px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a1a;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:300;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:#aaa;font-size:13px}
+.empty-pretty{text-align:center;padding:32px 10px;color:#c9a8c2;font-size:13px;background:linear-gradient(135deg,#fdf2f6,#f7f0fb);border-radius:10px}
+
+/* Action buttons */
+.action-btns{display:flex;gap:4px}
+.icon-btn{padding:5px 8px;border-radius:6px;font-size:12px;cursor:pointer;border:1px solid #e8e8e4;background:#fff;display:inline-flex;align-items:center;gap:4px;transition:all 0.15s;font-family:inherit}
+.icon-btn:hover{background:#f5f5f0}
+.icon-btn.del{color:#A32D2D}
+.icon-btn.del:hover{background:#FCEBEB;border-color:#F7C1C1}
+.icon-btn:disabled{opacity:.3;cursor:not-allowed}
+.icon-btn:disabled:hover{background:#fff}
+
+/* Month navigator */
+.month-nav{display:flex;align-items:center;gap:2px;margin-right:6px;background:#faf9f7;border:1px solid #ececea;border-radius:8px;padding:3px}
+.month-nav .icon-btn{border:none;background:transparent;padding:5px 7px}
+.month-nav .icon-btn:hover{background:#eee}
+.month-nav-label{font-size:12.5px;font-weight:700;min-width:104px;text-align:center;background:linear-gradient(135deg,#7F77DD,#D4537E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;padding:0 2px}
+.month-nav .btn{font-size:11px;padding:5px 10px;height:auto;border-radius:6px}
+
+/* Paste area */
+.paste-area{width:100%;min-height:120px;font-family:'Consolas',monospace;font-size:12px;padding:10px;border-radius:8px;border:1px dashed #c9a8c2;background:#fdf9fb;resize:vertical}
+.paste-area:focus{outline:none;border-color:#D4537E;background:#fff}
+.paste-hint{font-size:11px;color:#aaa;margin-top:6px}
+
+/* ── Drag-drop zone ── */
+.drop-zone{width:100%;min-height:140px;border:2px dashed #c9a8c2;border-radius:12px;background:#fdf9fb;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#D4537E;background:#fdf0f6;transform:scale(1.01)}
+.drop-zone.has-file{border-color:#3B6D11;background:#f0faf0;border-style:solid}
+.drop-zone-icon{font-size:32px;margin-bottom:8px;transition:transform .2s}
+.drop-zone:hover .drop-zone-icon,.drop-zone.drag-over .drop-zone-icon{transform:translateY(-4px)}
+.drop-zone-label{font-size:13px;color:#a880c0;font-weight:600;margin-bottom:4px}
+.drop-zone-sub{font-size:11px;color:#bbb}
+.drop-zone.has-file .drop-zone-label{color:#3B6D11}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-zone-filename{font-size:12px;color:#3B6D11;font-weight:600;margin-top:6px;background:#e6f4dd;padding:3px 10px;border-radius:20px;display:none}
+.drop-zone.has-file .drop-zone-filename{display:inline-block}
+
+/* ── Bill summary card ── */
+.bill-summary-card{background:linear-gradient(135deg,#fdf2f6,#f3e8fb);border:1.5px solid #e8d4f0;border-radius:12px;padding:16px 20px;margin-top:16px}
+.bill-summary-title{font-size:12px;font-weight:600;color:#7F77DD;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.bill-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.bill-sum-item{background:#fff;border:1px solid #e8e8e4;border-radius:8px;padding:10px 14px;text-align:center}
+.bill-sum-label{font-size:11px;color:#999;margin-bottom:4px}
+.bill-sum-value{font-size:20px;font-weight:700;background:linear-gradient(135deg,#7F77DD,#D4537E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bill-sum-sub{font-size:10px;color:#bbb;margin-top:2px}
+.bill-damaged-list{margin-top:10px;font-size:12px;color:#A32D2D;background:#FCEBEB;padding:8px 12px;border-radius:7px;display:none}
+.bill-damaged-list.show{display:block}
+
+/* ── preview note ── */
+.preview-note{font-size:12px;color:#7F77DD;background:#F3E8FB;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:none}
+.preview-note.show{display:block}
+
+/* ====== LOGIN PAGE ====== */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;background:transparent;position:relative;z-index:1;padding:24px}
+.login-box{background:linear-gradient(160deg,rgba(255,255,255,0.94),rgba(253,242,246,0.92) 55%,rgba(243,232,251,0.92));backdrop-filter:blur(6px);border:1px solid #e8e8e4;border-radius:22px;padding:32px 38px;width:980px;max-width:96vw;max-height:none;overflow:visible;position:relative;box-shadow:0 24px 60px -16px rgba(124,77,255,0.28)}
+.login-bubbles{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.login-inner{position:relative;z-index:1;width:100%}
+.login-logo{text-align:center;margin-bottom:22px}
+.login-logo .logo-icon{width:52px;height:52px;border-radius:50%;font-size:14px;font-weight:700;letter-spacing:0.5px;margin:0 auto 14px;box-shadow:0 8px 18px -6px rgba(124,77,255,0.45)}
+.login-logo h1{font-size:19px;font-weight:400;font-family:'Pacifico',cursive;color:#ffffff;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);padding:9px 22px;border-radius:30px;letter-spacing:0.3px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 8px 20px -8px rgba(212,83,126,0.5)}
+.login-logo .hkt-subtitle-track{margin-top:9px;width:230px;margin-left:auto;margin-right:auto}
+.login-select-label{font-size:10.5px;color:#a880c0;letter-spacing:0.8px;font-weight:600;text-transform:uppercase;margin-bottom:10px;padding-left:2px}
+.user-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+
+.user-opt{position:relative;height:70px;border-radius:12px;overflow:hidden;cursor:pointer;border:1.5px solid rgba(212,83,126,0.18);transition:transform .18s,border-color .2s,box-shadow .2s;box-shadow:0 2px 8px rgba(127,119,221,0.08)}
+.user-opt:hover{transform:translateY(-2px);border-color:rgba(212,83,126,0.45);box-shadow:0 6px 18px rgba(212,83,126,0.15)}
+.user-opt.selected{border-color:#D4537E;box-shadow:0 6px 20px rgba(212,83,126,0.25)}
+.uopt-bg-left{position:absolute;inset:0;background:#fff}
+.uopt-bg-right{position:absolute;inset:0 0 0 58%;background:linear-gradient(135deg,#fbeaf2,#f5e6f8);transform:translateX(100%);transition:transform 0.3s cubic-bezier(0.34,1.1,0.64,1)}
+.user-opt.selected .uopt-bg-right{background:linear-gradient(135deg,#f9d8ea,#f0d8f6);transform:translateX(0)}
+.uopt-slash{position:absolute;inset:0;width:100%;height:100%}
+.uopt-inner{position:relative;z-index:3;display:flex;align-items:center;height:100%;padding:0 13px 0 12px}
+.user-opt-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid rgba(255,255,255,0.8);box-shadow:0 2px 8px rgba(0,0,0,0.15);overflow:hidden}
+.user-opt-avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.uopt-info{flex:1;padding:0 8px;min-width:0}
+.user-opt-name{font-size:12px;font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.28;letter-spacing:.1px;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.user-opt.selected .user-opt-name{background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.uopt-right{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.uopt-role{position:absolute;top:50%;right:30px;font-size:9.5px;font-weight:700;letter-spacing:.3px;padding:4px 9px;border-radius:20px;white-space:nowrap;background:#fff;border:1.5px solid #e4b8d0;color:#993556;transform:translateY(-50%) translateX(160px);transition:transform 0.3s cubic-bezier(0.34,1.1,0.64,1) 0.05s;pointer-events:none;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+.user-opt.selected .uopt-role{background:#fbeaf0;border-color:#D4537E;color:#72243E;transform:translateY(-50%) translateX(0)}
+.user-opt-check{font-size:15px;color:#D4537E;opacity:0;transform:translateX(20px);transition:opacity .2s,transform .3s cubic-bezier(0.34,1.1,0.64,1) 0.1s}
+.user-opt.selected .user-opt-check{opacity:1;transform:translateX(0)}
+
+#login-btn:disabled{opacity:0.4;cursor:not-allowed;filter:grayscale(0.3)}
+
+/* ── login auth row: smooth slide-down instead of abrupt display toggle ── */
+.login-auth-row{
+  display:flex;align-items:flex-end;gap:8px;align-self:center;
+  overflow:hidden;
+  max-height:0;
+  opacity:0;
+  transform:translateY(-10px);
+  transition:max-height .42s cubic-bezier(0.34,1.05,0.64,1),
+             opacity .32s ease,
+             transform .42s cubic-bezier(0.34,1.05,0.64,1);
+  pointer-events:none;
+}
+.login-auth-row.show{
+  max-height:90px;
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+.login-pw-group{flex:1;margin-bottom:0;min-width:0;opacity:0;transform:translateY(-8px);transition:opacity .3s ease,transform .34s cubic-bezier(0.34,1.05,0.64,1)}
+.login-auth-row.show .login-pw-group{opacity:1;transform:translateY(0)}
+.login-pw-group label{font-size:11px}
+.login-pw-group input{height:38px}
+.login-submit-btn{height:38px;padding:0 18px;white-space:nowrap;flex-shrink:0;opacity:0;transform:translateX(28px);transition:opacity .3s ease .22s,transform .38s cubic-bezier(0.34,1.05,0.64,1) .22s}
+.login-auth-row.show .login-submit-btn{opacity:1;transform:translateX(0)}
+
+@media (max-width: 860px){
+  .user-list{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width: 560px){
+  .user-list{grid-template-columns:1fr}
+  .login-box{padding:24px 20px}
+}
+
+/* ====================================================================
+   MOBILE PORTRAIT LAYOUT — sidebar becomes a bottom tab bar, grids
+   collapse to fewer columns, and data tables reflow into stacked
+   "card" rows instead of scrolling sideways.
+   ==================================================================== */
+.mobile-user-btn{display:none}
+
+@media (max-width: 768px){
+  html,body{height:auto;overflow-y:auto;overflow-x:hidden}
+  .app{flex-direction:column;height:auto;min-height:100vh;min-height:100dvh;overflow:visible}
+
+  /* --- Sidebar -> fixed bottom tab bar --- */
+  .sidebar{
+    width:100%;
+    height:auto;
+    flex-shrink:0;
+    border-right:none;
+    border-top:1px solid #e8e8e4;
+    position:fixed;
+    left:0;right:0;bottom:0;
+    z-index:50;
+    box-shadow:0 -6px 18px rgba(124,77,255,0.12);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  .sidebar-art,.sidebar-bg,.sidebar .logo,.sidebar .user-area{display:none}
+  .sidebar .nav{
+    display:flex;
+    flex-direction:row;
+    align-items:stretch;
+    padding:5px 3px;
+    gap:2px;
+    overflow-x:auto;
+    flex:none;
+  }
+  .sidebar .nav-item{
+    flex:1 1 0;
+    min-width:0;
+    flex-direction:column;
+    justify-content:center;
+    gap:2px;
+    padding:6px 2px 5px;
+    font-size:9.5px;
+    text-align:center;
+    white-space:nowrap;
+    margin-bottom:0;
+    border-radius:9px;
+  }
+  .sidebar .nav-icon-svg{width:19px;height:19px}
+
+  /* --- Main / content area: no more nested scroll box, the page itself scrolls --- */
+  .main{overflow:visible;height:auto}
+  .content{
+    overflow:visible;
+    padding:12px;
+    padding-bottom:calc(96px + env(safe-area-inset-bottom));
+  }
+
+  /* --- Topbar --- */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:40;
+    height:auto;
+    min-height:50px;
+    flex-wrap:wrap;
+    row-gap:8px;
+    padding:9px 12px;
+  }
+  .page-title{font-size:14px}
+  .topbar-actions{width:100%;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+  #sync-text{display:none}
+  #sync-status{margin-right:0}
+  .month-nav-label{min-width:78px;font-size:11.5px}
+  .topbar .btn{padding:6px 10px;font-size:12px}
+  .mobile-user-btn{display:inline-flex;order:-1;margin-right:auto}
+
+  /* --- Stat cards: 2 per row --- */
+  .stats-grid{grid-template-columns:repeat(2,1fr) !important;gap:8px}
+  .stat-card{padding:11px 12px;gap:9px}
+  .stat-icon-svg{width:34px;height:34px}
+  .stat-value{font-size:18px}
+  .stat-label{font-size:11px}
+  .stat-sub{font-size:10px}
+
+  /* --- Stack two-column sections --- */
+  .two-col{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+  .bill-summary-grid{grid-template-columns:repeat(2,1fr)}
+
+  /* --- Modal --- */
+  .modal{width:92vw;padding:18px}
+
+  /* --- Filters --- */
+  .filter-row{gap:6px}
+  .filter-row input,.filter-row select{flex:1 1 130px;min-width:0}
+
+  /* --- Tables: reflow into stacked cards (portrait-friendly) --- */
+  .table thead{display:none}
+  .table, .table tbody, .table tr{display:block;width:100%}
+  .table tr{
+    background:#fff;
+    border:1px solid #f0f0ea;
+    border-radius:10px;
+    padding:4px 12px;
+    margin-bottom:8px;
+  }
+  .table tr:hover td{background:transparent}
+  .table td{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    padding:7px 0;
+    border-bottom:1px dashed #f0eef5;
+    text-align:right;
+    max-width:none !important;
+    white-space:normal !important;
+    overflow:visible !important;
+    text-overflow:unset !important;
+  }
+  .table td:last-child{border-bottom:none}
+  .table td[data-label]::before{
+    content:attr(data-label);
+    font-size:11px;
+    color:#a99bc4;
+    font-weight:600;
+    text-align:left;
+    flex-shrink:0;
+    padding-right:8px;
+  }
+  .table td .action-btns{justify-content:flex-end}
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE BACKGROUND ANIMATION -->
+<div class="page-bg" id="pageBg">
+  <div class="pbg-blob pbg-b1"></div>
+  <div class="pbg-blob pbg-b2"></div>
+  <div class="pbg-blob pbg-b3"></div>
+  <div class="pbg-blob pbg-b4"></div>
+  <div class="pbg-blob pbg-b5"></div>
+  <div class="pbg-blob pbg-b6"></div>
+  <svg class="pbg-waves" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <path class="pbg-wave w1" d="M0,650 Q240,600 480,650 T960,650 T1440,650 V900 H0 Z" fill="#D4537E" opacity="0.07"/>
+    <path class="pbg-wave w2" d="M0,700 Q240,760 480,700 T960,700 T1440,700 V900 H0 Z" fill="#7F77DD" opacity="0.08"/>
+    <path class="pbg-wave w3" d="M0,760 Q240,720 480,760 T960,760 T1440,760 V900 H0 Z" fill="#F0997B" opacity="0.07"/>
+  </svg>
+  <div id="pageBgFireflies"></div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginPage">
+  <div class="login-box">
+    <svg class="login-bubbles" viewBox="0 0 980 600" preserveAspectRatio="xMidYMid slice">
+      <circle cx="900" cy="15" r="100" fill="#7F77DD" opacity="0.16"/>
+      <circle cx="20" cy="580" r="110" fill="#D4537E" opacity="0.16"/>
+      <circle cx="880" cy="550" r="32" fill="#F0997B" opacity="0.16"/>
+    </svg>
+    <div class="login-inner">
+      <div class="login-logo">
+        <div class="logo-icon">PEA</div>
+        <h1><i class="ti ti-sparkles" style="font-size:16px"></i>HKT REPORT</h1>
+        <div class="hkt-subtitle-track">
+          <div class="hkt-subtitle-scroll"><span>Historical Knowledge Tracker</span><span>Historical Knowledge Tracker</span></div>
+        </div>
+      </div>
+      <div class="login-select-label">เลือกผู้ใช้เพื่อเข้าสู่ระบบ</div>
+      <div id="user-list" class="user-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div class="app" id="mainApp" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-art">
+      <div class="sb-blob b1"></div>
+      <div class="sb-blob b2"></div>
+      <div class="sb-blob b3"></div>
+      <div class="sb-blob b4"></div>
+      <div id="sidebarFireflies"></div>
+    </div>
+    <svg class="sidebar-bg" viewBox="0 0 210 960" preserveAspectRatio="xMidYMid slice">
+      <defs><radialGradient id="sidebarRg" cx="0.85" cy="0" r="0.6"><stop offset="0" stop-color="#EEEDFE"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs>
+      <rect width="210" height="960" fill="url(#sidebarRg)"/>
+      <circle cx="190" cy="25" r="55" fill="#7F77DD" opacity="0.10"/>
+      <circle cx="-15" cy="850" r="90" fill="#D4537E" opacity="0.10"/>
+      <circle cx="175" cy="780" r="28" fill="#F0997B" opacity="0.10"/>
+      <circle cx="25" cy="380" r="16" fill="#7F77DD" opacity="0.06"/>
+      <circle cx="195" cy="520" r="20" fill="#D4537E" opacity="0.06"/>
+      <path d="M0 915 Q55 900 110 915 T220 915 V960 H0 Z" fill="#D4537E" opacity="0.06"/>
+    </svg>
+    <div class="logo">
+      <div style="font-size:13px;font-weight:400;font-family:'Pacifico',cursive;color:#ffffff;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);padding:8px 14px;border-radius:30px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap"><i class="ti ti-sparkles" style="font-size:14px"></i>HKT REPORT</div>
+      <div class="logo-sub hkt-subtitle-track" style="margin-top:6px;width:160px">
+        <div class="hkt-subtitle-scroll"><span>Historical Knowledge Tracker</span><span>Historical Knowledge Tracker</span></div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" onclick="showPage('dashboard',this)">
+        <svg class="nav-icon-svg" width="18" height="18" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="24" fill="#E6F1FB"/>
+          <circle cx="32" cy="32" r="24" fill="none" stroke="#185FA5" stroke-width="5" stroke-dasharray="40 100" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="2.4s" repeatCount="indefinite"/>
+          </circle>
+        </svg> ภาพรวม
+      </button>
+      <button class="nav-item" onclick="showPage('logs',this)">
+        <svg class="nav-icon-svg" width="18" height="18" viewBox="0 0 64 64">
+          <rect x="16" y="10" width="32" height="40" rx="3" fill="#FBEAF0"/>
+          <line x1="22" y1="22" x2="42" y2="22" stroke="#D4537E" stroke-width="3" stroke-linecap="round"/>
+          <line x1="22" y1="32" x2="42" y2="32" stroke="#D4537E" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+          <line x1="22" y1="42" x2="34" y2="42" stroke="#D4537E" stroke-width="3" stroke-linecap="round" opacity="0.5">
+            <animate attributeName="x2" values="34;38;34" dur="1.8s" repeatCount="indefinite"/>
+          </line>
+        </svg> บันทึกงาน
+      </button>
+      <button class="nav-item" onclick="showPage('add',this)">
+        <svg class="nav-icon-svg" width="18" height="18" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="22" fill="#EEEDFE"/>
+          <line x1="32" y1="20" x2="32" y2="44" stroke="#534AB7" stroke-width="4" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="scale" values="1;1.15;1" dur="1.4s" repeatCount="indefinite" additive="sum"/>
+          </line>
+          <line x1="20" y1="32" x2="44" y2="32" stroke="#534AB7" stroke-width="4" stroke-linecap="round">
+            <animateTransform attributeName="transform" type="scale" values="1;1.15;1" dur="1.4s" repeatCount="indefinite" additive="sum"/>
+          </line>
+        </svg> เพิ่มงานใหม่
+      </button>
+      <button class="nav-item" onclick="showPage('bills',this)">
+        <svg class="nav-icon-svg" width="18" height="18" viewBox="0 0 64 64">
+          <rect x="16" y="10" width="24" height="32" rx="3" fill="#FBEAF0"/>
+          <circle cx="42" cy="38" r="10" fill="#D4537E"/>
+          <text x="42" y="42" text-anchor="middle" font-size="11" font-weight="600" fill="#FBEAF0">฿</text>
+          <circle cx="42" cy="38" r="10" fill="none" stroke="#D4537E" stroke-width="1.5" opacity="0">
+            <animate attributeName="r" values="10;16" dur="1.6s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.6;0" dur="1.6s" repeatCount="indefinite"/>
+          </circle>
+        </svg> บิลและใบแจ้งหนี้
+      </button>
+      <button class="nav-item" onclick="showPage('stats',this)">
+        <svg class="nav-icon-svg" width="18" height="18" viewBox="0 0 64 64">
+          <rect x="14" y="38" width="9" height="16" rx="1.5" fill="#7BAE3F">
+            <animate attributeName="height" values="16;20;16" dur="1.6s" repeatCount="indefinite"/>
+            <animate attributeName="y" values="38;34;38" dur="1.6s" repeatCount="indefinite"/>
+          </rect>
+          <rect x="28" y="26" width="9" height="28" rx="1.5" fill="#3B6D11">
+            <animate attributeName="height" values="28;34;28" dur="1.6s" begin="0.2s" repeatCount="indefinite"/>
+            <animate attributeName="y" values="26;20;26" dur="1.6s" begin="0.2s" repeatCount="indefinite"/>
+          </rect>
+          <rect x="42" y="16" width="9" height="38" rx="1.5" fill="#27500A">
+            <animate attributeName="height" values="38;44;38" dur="1.6s" begin="0.4s" repeatCount="indefinite"/>
+            <animate attributeName="y" values="16;10;16" dur="1.6s" begin="0.4s" repeatCount="indefinite"/>
+          </rect>
+        </svg> สถิติ
+      </button>
+    </nav>
+    <div class="user-area">
+      <div class="user-card" onclick="logout()">
+        <div class="avatar" id="sidebar-avatar" style="overflow:hidden"></div>
+        <div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="user-name" id="sidebar-name" style="background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600">-</div>
+            <span id="sidebar-admin-badge" class="badge badge-amber" style="display:none;font-size:9px;padding:2px 7px">หผ.</span>
+          </div>
+          <div class="user-role">คลิกเพื่อออกจากระบบ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn mobile-user-btn" onclick="logout()" title="ออกจากระบบ"><i class="ti ti-logout"></i></button>
+      <div class="page-title" id="pageTitle"><span>ภาพรวมการทำงาน</span></div>
+      <div class="topbar-actions">
+        <div class="month-nav" id="monthNav">
+          <button class="icon-btn" onclick="changeMonth(-1)" title="เดือนก่อนหน้า"><i class="ti ti-chevron-left"></i></button>
+          <span class="month-nav-label" id="monthLabel">-</span>
+          <button class="icon-btn" id="monthNextBtn" onclick="changeMonth(1)" title="เดือนถัดไป"><i class="ti ti-chevron-right"></i></button>
+          <button class="btn" onclick="goToCurrentMonth()" title="กลับไปเดือนนี้">เดือนนี้</button>
+        </div>
+        <span id="sync-status" style="font-size:11px;color:#aaa;display:flex;align-items:center;gap:5px;margin-right:4px">
+          <span id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:#ccc;display:inline-block"></span>
+          <span id="sync-text">กำลังเชื่อมต่อ...</span>
+        </span>
+        <button class="btn primary" onclick="gotoBills()">จัดการบิล</button>
+        <button class="btn primary" onclick="gotoAdd()">+ เพิ่มงาน</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card c1">
+            <svg class="stat-icon-svg" width="44" height="44" viewBox="0 0 64 64">
+              <defs><linearGradient id="gradFolder" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#AFA9EC"/><stop offset="1" stop-color="#534AB7"/></linearGradient></defs>
+              <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -5;0 0" dur="2s" repeatCount="indefinite"/>
+                <path d="M14 22 L14 16 Q14 14 16 14 L26 14 L30 18 L48 18 Q50 18 50 20 L50 22 Z" fill="#7F77DD"/>
+                <rect x="12" y="22" width="40" height="22" rx="3" fill="url(#gradFolder)"/>
+                <rect x="12" y="22" width="40" height="5" rx="2" fill="#EEEDFE" opacity="0.5"/>
+              </g>
+            </svg>
+            <div class="stat-text">
+              <div class="stat-label">ใบงาน</div>
+              <div class="stat-value c1" id="s-total">0</div>
+              <div class="stat-sub" id="s-total-sub">เฉพาะ</div>
+            </div>
+          </div>
+          <div class="stat-card c2">
+            <svg class="stat-icon-svg" width="44" height="44" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="24" fill="#E6F1FB"/>
+              <circle cx="32" cy="32" r="24" fill="none" stroke="#B5D4F4" stroke-width="4"/>
+              <circle cx="32" cy="32" r="24" fill="none" stroke="#185FA5" stroke-width="4" stroke-dasharray="50 100" stroke-linecap="round">
+                <animateTransform attributeName="transform" type="rotate" from="0 32 32" to="360 32 32" dur="1.4s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="32" cy="32" r="6" fill="#185FA5"><animate attributeName="r" values="6;7.5;6" dur="1.4s" repeatCount="indefinite"/></circle>
+            </svg>
+            <div class="stat-text">
+              <div class="stat-label">กำลังทำ</div>
+              <div class="stat-value c2" id="s-inprog">0</div>
+              <div class="stat-sub">รายการ</div>
+            </div>
+          </div>
+          <div class="stat-card c3">
+            <svg class="stat-icon-svg" width="44" height="44" viewBox="0 0 64 64">
+              <circle cx="32" cy="32" r="26" fill="#EAF3DE"/>
+              <path d="M20 32 L28 41 L46 21" fill="none" stroke="#27500A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="34" stroke-dashoffset="34">
+                <animate attributeName="stroke-dashoffset" values="34;0;34" dur="2.4s" repeatCount="indefinite"/>
+              </path>
+            </svg>
+            <div class="stat-text">
+              <div class="stat-label">เสร็จแล้ว</div>
+              <div class="stat-value c3" id="s-done">0</div>
+              <div class="stat-sub">รายการ</div>
+            </div>
+          </div>
+          <div class="stat-card c4" id="s-bills-card">
+            <svg class="stat-icon-svg" width="44" height="44" viewBox="0 0 64 64">
+              <defs><linearGradient id="gradAllwork" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ED93B1"/><stop offset="1" stop-color="#D4537E"/></linearGradient></defs>
+              <g><animateTransform attributeName="transform" type="translate" values="0 0;0 -3;0 0" dur="2.2s" repeatCount="indefinite"/>
+                <rect x="13" y="12" width="30" height="38" rx="3" fill="url(#gradAllwork)"/>
+                <line x1="20" y1="24" x2="36" y2="24" stroke="#FBEAF0" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="20" y1="32" x2="36" y2="32" stroke="#FBEAF0" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+                <line x1="20" y1="40" x2="30" y2="40" stroke="#FBEAF0" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+              </g>
+              <circle cx="46" cy="44" r="10" fill="#72243E"/>
+              <path d="M41 44 L45 48 L52 40" fill="none" stroke="#FBEAF0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="46" cy="44" r="10" fill="none" stroke="#ED93B1" stroke-width="2" opacity="0">
+                <animate attributeName="r" values="10;16" dur="1.6s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.6;0" dur="1.6s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            <div class="stat-text">
+              <div class="stat-label">รวมงานทั้งหมด</div>
+              <div class="stat-value c4" id="s-bills">0</div>
+              <div class="stat-sub">รายการ (ทุกเดือน)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- เฉพาะแอดมิน: สรุปงานแยกตามผู้บันทึกแต่ละคน (ขึ้นแทนงานล่าสุด/งานตามการไฟฟ้า) -->
+        <div class="section" id="admin-owner-section" style="display:none">
+          <div class="section-header"><span class="section-title"><i class="ti ti-users-group"></i>สรุปงานแยกตามผู้บันทึก</span></div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ผู้บันทึก</th>
+                <th style="text-align:center">งานทั้งหมด</th>
+                <th style="text-align:center">กำลังทำ</th>
+                <th style="text-align:center">รอตรวจ</th>
+                <th style="text-align:center">เสร็จแล้ว</th>
+                <th style="text-align:center">ยกเลิก</th>
+              </tr>
+            </thead>
+            <tbody id="owner-stats-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="two-col" id="dashboard-two-col">
+          <div class="section">
+            <div class="section-header"><span class="section-title"><i class="ti ti-list-details"></i>งาน 10 รายการล่าสุด</span></div>
+            <table class="table">
+              <thead><tr><th>โปรเจกต์</th><th>สถานะ</th><th>วันที่</th></tr></thead>
+              <tbody id="recent-tbody"></tbody>
+            </table>
+          </div>
+          <div class="section">
+            <div class="section-header"><span class="section-title" id="client-stats-title"><i class="ti ti-users"></i>งานตามการไฟฟ้า</span></div>
+            <div id="client-stats"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOGS -->
+      <div class="page" id="page-logs">
+        <div class="filter-row">
+          <input type="text" id="search" placeholder="🔍 ค้นหาโปรเจกต์ / การไฟฟ้า..." oninput="renderLogs()" style="width:220px">
+          <select id="filterStatus" onchange="renderLogs()">
+            <option value="">ทุกสถานะ</option>
+            <option value="กำลังทำ">กำลังทำ</option>
+            <option value="รอตรวจ">รอตรวจ</option>
+            <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+            <option value="ยกเลิก">ยกเลิก</option>
+          </select>
+          <input type="date" id="filterDate" onchange="renderLogs()">
+          <select id="filterOwner" onchange="renderLogs()" style="display:none">
+            <option value="">ทุกคน</option>
+          </select>
+          <button class="btn" onclick="clearFilters()">ล้าง</button>
+        </div>
+        <div class="section">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>โปรเจกต์ / ไฟล์</th>
+                <th>การไฟฟ้าที่แจ้งปัญหา</th>
+                <th>วันที่เริ่มดำเนินการ</th>
+                <th>วันที่ดำเนินการเสร็จ</th>
+                <th>สถานะ</th>
+                <th>โน้ต</th>
+                <th>ผู้บันทึก</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="log-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ADD -->
+      <div class="page" id="page-add">
+        <div class="section" style="max-width:580px">
+          <div class="section-header"><span class="section-title">บันทึกงานใหม่</span></div>
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label>ชื่อโปรเจกต์ / ไฟล์ *</label>
+              <input type="text" id="f-project" placeholder="เช่น Homepage_v3.dw, Banner_ABC.dw">
+            </div>
+            <div class="form-group">
+              <label>การไฟฟ้าที่แจ้งปัญหา</label>
+              <input type="text" id="f-client" placeholder="เช่น การไฟฟ้าเขต 1">
+            </div>
+            <div class="form-group">
+              <label>สถานะ</label>
+              <select id="f-status">
+                <option value="กำลังทำ">กำลังทำ</option>
+                <option value="รอตรวจ">รอตรวจ</option>
+                <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+                <option value="ยกเลิก">ยกเลิก</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>วันที่เริ่มดำเนินการ</label>
+              <input type="date" id="f-date">
+            </div>
+            <div class="form-group">
+              <label>วันที่ดำเนินการเสร็จ</label>
+              <input type="date" id="f-end">
+            </div>
+            <div class="form-group form-full">
+              <label>โน้ต / รายละเอียดเพิ่มเติม</label>
+              <textarea id="f-note" placeholder="รายละเอียดงาน, ปัญหาที่พบ, สิ่งที่ทำไป, version ไฟล์ ฯลฯ"></textarea>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:8px">
+            <button class="btn primary" onclick="saveLog()">💾 บันทึกงาน</button>
+            <button class="btn" onclick="clearForm()">✕ ล้างข้อมูล</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BILLS / INVOICES -->
+      <div class="page" id="page-bills">
+
+        <!-- ── ขั้นที่ 1: ลากไฟล์ Excel มาวาง ── -->
+        <div class="section">
+          <div class="section-header"><span class="section-title"><i class="ti ti-table-import"></i>นำเข้าไฟล์ Excel เพื่อคำนวณสรุป</span></div>
+          <p style="font-size:12px;color:#888;margin-bottom:12px">ลากไฟล์ Excel (.xlsx / .xls) มาวางในกรอบด้านล่าง หรือคลิกเพื่อเลือกไฟล์ — ระบบจะนับสายและรวมฉบับให้อัตโนมัติ</p>
+
+          <div class="drop-zone" id="dropZone"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event)">
+            <input type="file" accept=".xlsx,.xls" onchange="handleFileInput(event)" id="fileInput">
+            <div class="drop-zone-icon">📊</div>
+            <div class="drop-zone-label" id="dropLabel">ลากไฟล์ Excel มาวางที่นี่</div>
+            <div class="drop-zone-sub">หรือคลิกเพื่อเลือกไฟล์ .xlsx / .xls</div>
+            <div class="drop-zone-filename" id="dropFilename"></div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:8px;align-items:center">
+            <button class="btn primary" onclick="calcBillSummary()"><i class="ti ti-calculator"></i> คำนวณสรุป</button>
+            <button class="btn" onclick="clearBillPaste()">✕ ล้างไฟล์</button>
+            <span id="sheet-select-wrap" style="display:none;align-items:center;gap:6px;font-size:13px">
+              <label style="color:#666;font-size:12px">ชีต:</label>
+              <select id="sheet-select" style="font-size:13px;padding:5px 8px;border-radius:7px;border:1px solid #ddd" onchange="onSheetChange()"></select>
+            </span>
+          </div>
+
+          <!-- ผลการคำนวณ -->
+          <div class="bill-summary-card" id="bill-calc-result" style="display:none">
+            <div class="bill-summary-title"><i class="ti ti-chart-bar"></i> ผลรวมทุกการไฟฟ้า</div>
+            <div class="bill-summary-grid">
+              <div class="bill-sum-item">
+                <div class="bill-sum-label">จำนวนสายทั้งหมด</div>
+                <div class="bill-sum-value" id="calc-routes">0</div>
+                <div class="bill-sum-sub">สาย</div>
+              </div>
+              <div class="bill-sum-item">
+                <div class="bill-sum-label">พิมพ์ปกติทั้งหมด</div>
+                <div class="bill-sum-value" id="calc-normal">0</div>
+                <div class="bill-sum-sub">ฉบับ</div>
+              </div>
+              <div class="bill-sum-item">
+                <div class="bill-sum-label">พิมพ์ซ่อมทั้งหมด</div>
+                <div class="bill-sum-value" id="calc-repair">0</div>
+                <div class="bill-sum-sub">ฉบับ</div>
+              </div>
+              <div class="bill-sum-item">
+                <div class="bill-sum-label">รวมพิมพ์ทั้งหมด</div>
+                <div class="bill-sum-value" id="calc-count">0</div>
+                <div class="bill-sum-sub">ฉบับ</div>
+              </div>
+            </div>
+
+            <div class="bill-summary-title" style="margin-top:16px"><i class="ti ti-building"></i> แยกตามการไฟฟ้า</div>
+            <table class="table" style="background:#fff;border-radius:8px;overflow:hidden">
+              <thead>
+                <tr>
+                  <th>การไฟฟ้า</th>
+                  <th style="text-align:center">จำนวนสาย</th>
+                  <th style="text-align:center">พิมพ์ปกติ</th>
+                  <th style="text-align:center">พิมพ์ซ่อม</th>
+                  <th style="text-align:center">รวมพิมพ์</th>
+                </tr>
+              </thead>
+              <tbody id="calc-per-office-tbody"></tbody>
+            </table>
+
+            <p style="font-size:11px;color:#888;margin-top:10px">✓ ยอด "จำนวนสายทั้งหมด" และ "รวมพิมพ์ทั้งหมด" ถูกกรอกลงในฟอร์มบันทึกด้านล่างให้แล้ว — ตรวจสอบและแก้ไขก่อนกดบันทึก</p>
+          </div>
+        </div>
+
+        <!-- ── ขั้นที่ 2: กรอกข้อมูลและบันทึกสรุปประจำวัน ── -->
+        <div class="section">
+          <div class="section-header"><span class="section-title"><i class="ti ti-file-plus"></i>บันทึกสรุปบิลประจำวัน</span></div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>วันที่ของรายงาน *</label>
+              <input type="date" id="bill-date">
+            </div>
+            <div class="form-group">
+              <label>จำนวนสายทั้งหมด *</label>
+              <input type="number" id="bill-routes" placeholder="0" min="0">
+            </div>
+            <div class="form-group">
+              <label>จำนวนฉบับทั้งหมด *</label>
+              <input type="number" id="bill-total-count" placeholder="0" min="0">
+            </div>
+            <div class="form-group">
+              <label>หมายเลขกระดาษบิล — เริ่ม</label>
+              <input type="text" id="bill-paper-start" placeholder="เช่น A00268746">
+            </div>
+            <div class="form-group">
+              <label>หมายเลขกระดาษบิล — สิ้นสุด</label>
+              <input type="text" id="bill-paper-end" placeholder="เช่น A00268900">
+            </div>
+            <div class="form-group">
+              <label>บิลที่ชำรุด</label>
+              <input type="text" id="bill-paper-damaged" placeholder="เช่น A00268750, A00268760">
+            </div>
+            <div class="form-group form-full">
+              <label>หมายเหตุเพิ่มเติม</label>
+              <input type="text" id="bill-note" placeholder="หมายเหตุ (ถ้ามี)">
+            </div>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button class="btn primary" onclick="saveBillSummary()"><i class="ti ti-device-floppy"></i> บันทึกสรุปวันนี้</button>
+            <button class="btn" onclick="clearBillForm()">✕ ล้างฟอร์ม</button>
+          </div>
+        </div>
+
+        <!-- ── รายการที่บันทึกไว้ ── -->
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title"><i class="ti ti-file-invoice"></i>ประวัติสรุปบิลที่บันทึกไว้</span>
+            <button class="icon-btn del" onclick="clearAllBills()"><i class="ti ti-trash"></i> ล้างทั้งหมด</button>
+          </div>
+          <div class="filter-row">
+            <input type="date" id="bill-filter-date" onchange="renderBills()">
+            <select id="bill-filter-owner" onchange="renderBills()" style="display:none">
+              <option value="">ทุกคน</option>
+            </select>
+            <button class="btn" onclick="document.getElementById('bill-filter-date').value='';document.getElementById('bill-filter-owner').value='';renderBills()">ล้างตัวกรอง</button>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>วันที่</th>
+                <th>จำนวนสาย</th>
+                <th>จำนวนฉบับ</th>
+                <th>เลขบิลเริ่ม</th>
+                <th>เลขบิลสิ้นสุด</th>
+                <th>บิลชำรุด</th>
+                <th>หมายเหตุ</th>
+                <th>ผู้บันทึก</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="bill-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="page" id="page-stats">
+        <div class="two-col">
+          <div class="section">
+            <div class="section-header"><span class="section-title" id="stats-chart-title">งานแต่ละวัน (7 วันล่าสุด)</span></div>
+            <div class="chart-wrap" id="bar-chart"></div>
+          </div>
+          <div class="section">
+            <div class="section-header"><span class="section-title">สรุปสถานะงาน</span></div>
+            <div id="status-breakdown"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header"><span class="section-title" id="client-hours-title">งานต่อการไฟฟ้า</span></div>
+          <div id="client-hours"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title">✏️ แก้ไขรายการงาน</div>
+    <div class="form-grid">
+      <div class="form-group form-full">
+        <label>ชื่อโปรเจกต์ / ไฟล์ *</label>
+        <input type="text" id="e-project">
+      </div>
+      <div class="form-group">
+        <label>การไฟฟ้าที่แจ้งปัญหา</label>
+        <input type="text" id="e-client">
+      </div>
+      <div class="form-group">
+        <label>สถานะ</label>
+        <select id="e-status">
+          <option value="กำลังทำ">กำลังทำ</option>
+          <option value="รอตรวจ">รอตรวจ</option>
+          <option value="เสร็จแล้ว">เสร็จแล้ว</option>
+          <option value="ยกเลิก">ยกเลิก</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>วันที่เริ่มดำเนินการ</label>
+        <input type="date" id="e-date">
+      </div>
+      <div class="form-group">
+        <label>วันที่ดำเนินการเสร็จ</label>
+        <input type="date" id="e-end">
+      </div>
+      <div class="form-group form-full">
+        <label>โน้ต</label>
+        <textarea id="e-note"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">ยกเลิก</button>
+      <button class="btn primary" onclick="saveEdit()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== DATA ======
+let currentUser = null;
+let logs = [];
+let bills = [];
+let editId = null;
+
+// ====== MONTH SELECTOR ======
+let selectedMonth = new Date().toISOString().slice(0,7); // 'YYYY-MM'
+const THAI_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+function isInSelectedMonth(dateStr) {
+  return !!dateStr && dateStr.slice(0,7) === selectedMonth;
+}
+function updateMonthLabel() {
+  const [y, m] = selectedMonth.split('-').map(Number);
+  const label = document.getElementById('monthLabel');
+  if (label) label.textContent = THAI_MONTHS[m-1] + ' ' + (y + 543);
+  const nextBtn = document.getElementById('monthNextBtn');
+  if (nextBtn) nextBtn.disabled = selectedMonth >= new Date().toISOString().slice(0,7);
+}
+function changeMonth(delta) {
+  const [y, m] = selectedMonth.split('-').map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  selectedMonth = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  updateMonthLabel();
+  refreshCurrentPage();
+}
+function goToCurrentMonth() {
+  selectedMonth = new Date().toISOString().slice(0,7);
+  updateMonthLabel();
+  refreshCurrentPage();
+}
+
+const STATUS_BADGE = {
+  'กำลังทำ': 'badge-blue',
+  'รอตรวจ': 'badge-amber',
+  'เสร็จแล้ว': 'badge-green',
+  'ยกเลิก': 'badge-red'
+};
+
+// ====== TITLE LETTER ANIMATION (page-title only) ======
+function splitGraphemes(text) {
+  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+    const seg = new Intl.Segmenter('th', { granularity: 'grapheme' });
+    return Array.from(seg.segment(text), s => s.segment);
+  }
+  return [...text];
+}
+function animateTitleLetters(text) {
+  const el = document.getElementById('pageTitle');
+  if (!el) return;
+  el.innerHTML = splitGraphemes(text).map((ch, i) => {
+    const c = ch === ' ' ? '&nbsp;' : ch;
+    const delay = (i * 0.06).toFixed(3);
+    return `<span style="animation:titleLetterPop .5s cubic-bezier(0.34,1.35,0.64,1) ${delay}s forwards">${c}</span>`;
+  }).join('');
+}
+
+// ====== FIREBASE ======
+const firebaseConfig = {
+  apiKey: "AIzaSyCN7YFiaaH8ggVvgnC3tQibW1Tz4i9T1Eo",
+  authDomain: "hkt-report.firebaseapp.com",
+  projectId: "hkt-report",
+  storageBucket: "hkt-report.firebasestorage.app",
+  messagingSenderId: "691491516883",
+  appId: "1:691491516883:web:ee1aabe102035fe3d63f26"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let logsUnsub = null;
+let billsUnsub = null;
+
+function setSyncStatus(state) {
+  const dot = document.getElementById('sync-dot');
+  const text = document.getElementById('sync-text');
+  if (!dot || !text) return;
+  if (state === 'connecting') { dot.style.background = '#F0C419'; text.textContent = 'กำลังเชื่อมต่อ...'; }
+  if (state === 'online')     { dot.style.background = '#3B6D11'; text.textContent = 'เชื่อมต่อแล้ว · ข้อมูลแบบ real-time'; }
+  if (state === 'error')      { dot.style.background = '#A32D2D'; text.textContent = 'เชื่อมต่อไม่ได้ ตรวจสอบ Firebase config'; }
+}
+
+function subscribeLogs() {
+  if (logsUnsub) logsUnsub();
+  const ref = isCurrentUserAdmin()
+    ? db.collection('logs')
+    : db.collection('logs').where('owner', '==', currentUser);
+  logsUnsub = ref.onSnapshot(
+    snapshot => {
+      logs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      logs.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      setSyncStatus('online');
+      refreshCurrentPage();
+    },
+    err => { console.error(err); setSyncStatus('error'); showToast('โหลดข้อมูลงานไม่สำเร็จ'); }
+  );
+}
+function subscribeBills() {
+  if (billsUnsub) billsUnsub();
+  const ref = isCurrentUserAdmin()
+    ? db.collection('bills')
+    : db.collection('bills').where('owner', '==', currentUser);
+  billsUnsub = ref.onSnapshot(
+    snapshot => {
+      bills = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      bills.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+      refreshCurrentPage();
+    },
+    err => { console.error(err); showToast('โหลดข้อมูลบิลไม่สำเร็จ'); }
+  );
+}
+function refreshCurrentPage() {
+  const activePage = document.querySelector('.page.active');
+  if (!activePage) return;
+  const id = activePage.id.replace('page-', '');
+  if (id === 'dashboard') renderDash();
+  if (id === 'logs') renderLogs();
+  if (id === 'bills') renderBills();
+  if (id === 'stats') renderStats();
+}
+
+function getInitial(name) {
+  const stripped = name.replace(/^(นางสาว|นาย|นาง|น\.ส\.)\s*/, '').trim();
+  return (stripped || name.trim()).charAt(0);
+}
+
+const USERS = [
+  { name: 'นายเกษมสันต์ สุรพัฒน์ ',      photo: 'photos/kasemsan.jpg',       role: 'กฟฉ.3', password: 'admin', isAdmin: true },
+  { name: 'นายบดินทร์ เทียมทอง',       photo: 'photos/badin.jpg',       role: 'กฟจ.สุรินทร์', password: 'pea001' },
+  { name: 'นายสนั่น ถนอมทรัพย์กุล',    photo: 'photos/sanan.jpg',       role: 'กฟส.ปากช่อง', password: 'pea002' },
+  { name: 'นายพิทยา แสงดาว',           photo: 'photos/pittaya.jpg',     role: 'กฟส.ภูเขียว', password: 'pea003' },
+  { name: 'นางดาวใจ พุฒตาลดง',         photo: 'photos/daojai.jpg',      role: 'กฟจ.นครราชสีมา', password: 'pea004' },
+  { name: 'นายอานุภาพ ชาญมะเริง',      photo: 'photos/anuphap.jpg',     role: 'กฟจ.นครราชสีมา', password: 'pea005' },
+  { name: 'นายศุภทัติ เมืองสิม',       photo: 'photos/suphathat.jpg',   role: 'กฟส.หัวทะเล', password: 'pea006' },
+  { name: 'นายเอกพงศ์ อุดมเวช',        photo: 'photos/ekkapong.jpg',    role: 'กฟจ.บุรีรัมย์', password: 'pea007' },
+  { name: 'นายจักรพงษ์ นารานฤมล',      photo: 'photos/jakkapong.jpg',   role: 'ในใจแบม', password: 'bam' },
+  { name: 'นายวัชรดล ธีระสาสน์',       photo: 'photos/watcharadon.jpg', role: 'กฟส.นางรอง', password: '61429721632g' },
+  { name: 'นายอภิเดช ขจรฤทธิ์ ',       photo: 'photos/apidat.jpg',     role: 'กฟฉ.3', password: 'pea008' },
+  { name: 'นายสามารถ จงนอก',       photo: 'photos/samart.jpg',      role: 'กฟส.บัวใหญ่', password: 'pea009' },
+  { name: 'นายภานุพงษ์ มาลีบูชา ',    photo: 'photos/panupong.jpg',       role: 'กฟส.พิมาย', password: 'pea010' }
+];
+
+function isCurrentUserAdmin() {
+  const u = USERS.find(x => x.name === currentUser);
+  return !!(u && u.isAdmin);
+}
+
+const AVATAR_COLORS = ['#7F77DD','#D4537E','#F0997B','#185FA5','#3B6D11','#534AB7','#ED93B1','#378ADD','#1D9E75'];
+const SLASH_COLORS  = ['#7F77DD','#D4537E','#F0997B','#378ADD','#3B6D11','#AFA9EC','#D4537E','#534AB7','#1D9E75'];
+
+// ====== LOGIN ======
+function renderLoginUsers() {
+  const list = document.getElementById('user-list');
+  list.innerHTML = USERS.map((u, i) => {
+    const avatarColor = AVATAR_COLORS[i % AVATAR_COLORS.length];
+    const slashColor  = SLASH_COLORS[i % SLASH_COLORS.length];
+    const avatarHTML = u.photo
+      ? `<img src="${u.photo}" alt="${u.name}" onerror="this.parentElement.style.background='${avatarColor}';this.remove()">`
+      : getInitial(u.name);
+    const avatarStyle = u.photo ? '' : `background:${avatarColor}`;
+    const roleLabel = u.role || 'เจ้าหน้าที่';
+    return `
+    <div class="user-opt" onclick="selectUser(this,'${u.name}')">
+      <div class="uopt-bg-left"></div>
+      <div class="uopt-bg-right"></div>
+      <svg class="uopt-slash" viewBox="0 0 380 62" preserveAspectRatio="none">
+        <polygon points="200,0 240,0 194,62 154,62" fill="${slashColor}" opacity="0.28"/>
+        <polygon points="214,0 228,0 182,62 168,62" fill="#D4537E" opacity="0.18"/>
+        <line x1="211" y1="0" x2="165" y2="62" stroke="${slashColor}" stroke-width="1.5" opacity="0.55"/>
+      </svg>
+      <div class="uopt-inner">
+        <div class="user-opt-avatar" style="${avatarStyle}">${avatarHTML}</div>
+        <div class="uopt-info">
+          <div class="user-opt-name">${u.name}</div>
+        </div>
+        <div class="uopt-right">
+          <div class="uopt-role">${roleLabel}</div>
+          <i class="ti ti-check user-opt-check"></i>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // เพิ่มแถวรหัสผ่าน + ปุ่มเข้าสู่ระบบ เป็นไอเทมในกริดเดียวกัน
+  // โดยให้ไปอยู่ในช่องที่เหลือว่างถัดจากผู้ใช้คนสุดท้าย
+  const authRow = document.createElement('div');
+  authRow.className = 'login-auth-row';
+  authRow.id = 'login-auth-row';
+  authRow.innerHTML = `
+    <div class="form-group login-pw-group">
+      <label>รหัสผ่าน</label>
+      <input type="password" id="login-password" placeholder="ใส่รหัสผ่านของคุณ" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn primary login-submit-btn" id="login-btn" onclick="doLogin()" disabled>เข้าสู่ระบบ</button>
+  `;
+  list.appendChild(authRow);
+
+  // คำนวณจำนวนคอลัมน์ที่เหลือว่างในแถวสุดท้าย เพื่อให้แถบนี้ขยายเต็มพื้นที่ว่างนั้น
+  updateAuthRowSpan();
+}
+
+function updateAuthRowSpan() {
+  const authRow = document.getElementById('login-auth-row');
+  if (!authRow) return;
+  const cols = window.innerWidth <= 560 ? 1 : (window.innerWidth <= 860 ? 2 : 3);
+  const remainder = USERS.length % cols;
+  const span = remainder === 0 ? cols : (cols - remainder);
+  authRow.style.gridColumn = remainder === 0 ? '1 / -1' : `span ${span}`;
+}
+window.addEventListener('resize', updateAuthRowSpan);
+
+
+let selectedUser = null;
+function selectUser(el, name) {
+  document.querySelectorAll('.user-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedUser = name;
+  document.getElementById('login-btn').disabled = false;
+  const pwWrap = document.getElementById('login-auth-row');
+  const pwInput = document.getElementById('login-password');
+  pwInput.value = '';
+
+  // เคลียร์ timer เก่า (กรณีคลิกสลับ user รัวๆ) ป้องกันชนกัน
+  clearTimeout(pwWrap._reopenTimer);
+
+  const alreadyShown = pwWrap.classList.contains('show');
+
+  if (alreadyShown) {
+    // ถ้าแถบโชว์อยู่แล้ว: ให้ "หุบลง" ก่อนจริงๆ (มีช่วงเวลาให้เห็น) แล้วค่อย "กางออกใหม่"
+    // เพราะถ้า remove+add class ในจังหวะเดียวกัน เบราว์เซอร์จะมองเป็น state เดิมไม่เปลี่ยน เลยไม่เห็น animation เลย
+    pwWrap.classList.remove('show');
+    pwWrap._reopenTimer = setTimeout(() => {
+      pwWrap.classList.add('show');
+      setTimeout(() => pwInput.focus(), 350);
+    }, 240); // ระยะเวลาสั้นๆ ให้เห็นจังหวะหุบ ก่อนจะ slide ออกมาใหม่
+  } else {
+    // ครั้งแรกที่ยังไม่เคยโชว์ ก็ slide ออกมาได้เลยตามปกติ
+    pwWrap.classList.add('show');
+    setTimeout(() => pwInput.focus(), 350);
+  }
+}
+
+function doLogin() {
+  if (!selectedUser) { showToast('กรุณาเลือกผู้ใช้ก่อน'); return; }
+  const userObj = USERS.find(u => u.name === selectedUser);
+  const enteredPw = document.getElementById('login-password').value;
+  if (!userObj || enteredPw !== userObj.password) {
+    showToast('รหัสผ่านไม่ถูกต้อง');
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-password').focus();
+    return;
+  }
+  sessionStorage.setItem('hkt_user', selectedUser);
+  currentUser = selectedUser;
+  setSyncStatus('connecting');
+  subscribeLogs();
+  subscribeBills();
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'flex';
+  document.getElementById('sidebar-name').textContent = currentUser;
+  renderSidebarAvatar();
+  animateTitleLetters('ภาพรวมการทำงาน');
+  renderDash();
+}
+
+function renderSidebarAvatar() {
+  const idx = USERS.findIndex(u => u.name === currentUser);
+  const u = idx >= 0 ? USERS[idx] : null;
+  const color = AVATAR_COLORS[(idx >= 0 ? idx : 0) % AVATAR_COLORS.length];
+  const el = document.getElementById('sidebar-avatar');
+  if (u && u.photo) {
+    el.style.background = '';
+    el.innerHTML = `<img src="${u.photo}" alt="${currentUser}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.background='${color}';this.remove()">`;
+  } else {
+    el.style.background = color;
+    el.innerHTML = `<span style="color:#fff;font-weight:700;font-size:12px">${getInitial(currentUser)}</span>`;
+  }
+  document.getElementById('sidebar-admin-badge').style.display = isCurrentUserAdmin() ? 'inline-flex' : 'none';
+  setupAdminFilters();
+  setupRoleUI();
+}
+
+// ====== ROLE-BASED UI (status options + nav/buttons for admin) ======
+function setupRoleUI() {
+  const isAdmin = isCurrentUserAdmin();
+
+  // ตัวเลือกสถานะ: ผู้ใช้ทั่วไปเลือกได้ กำลังทำ/รอตรวจ/ยกเลิก, แอดมินเลือกได้แค่ เสร็จแล้ว
+  const statusOptionsAdmin = `<option value="เสร็จแล้ว">เสร็จแล้ว</option>`;
+  const statusOptionsUser = `
+    <option value="กำลังทำ">กำลังทำ</option>
+    <option value="รอตรวจ">รอตรวจ</option>
+    <option value="ยกเลิก">ยกเลิก</option>`;
+  const fStatus = document.getElementById('f-status');
+  const eStatus = document.getElementById('e-status');
+  if (fStatus) fStatus.innerHTML = isAdmin ? statusOptionsAdmin : statusOptionsUser;
+  if (eStatus) eStatus.innerHTML = isAdmin ? statusOptionsAdmin : statusOptionsUser;
+
+  // ซ่อนเมนู "เพิ่มงานใหม่" / "บิลและใบแจ้งหนี้" และปุ่มมุมขวาบน เฉพาะแอดมิน
+  const navItems = document.querySelectorAll('.nav-item');
+  const navAdd = navItems[2];   // เพิ่มงานใหม่
+  const navBills = navItems[3]; // บิลและใบแจ้งหนี้
+  const navStats = navItems[4]; // สถิติ (เฉพาะแอดมิน)
+  if (navAdd) navAdd.style.display = isAdmin ? 'none' : '';
+  if (navBills) navBills.style.display = isAdmin ? 'none' : '';
+  if (navStats) navStats.style.display = isAdmin ? '' : 'none';
+
+  const billsBtn = document.querySelector('.topbar-actions .btn.primary[onclick="gotoBills()"]');
+  const addBtn = document.querySelector('.topbar-actions .btn.primary[onclick="gotoAdd()"]');
+  if (billsBtn) billsBtn.style.display = isAdmin ? 'none' : '';
+  if (addBtn) addBtn.style.display = isAdmin ? 'none' : '';
+
+  // ซ่อนการ์ด "จำนวนฉบับรวม (บิล)" ในหน้าภาพรวม เฉพาะแอดมิน
+  const billsCard = document.getElementById('s-bills-card');
+  if (billsCard) billsCard.style.display = isAdmin ? 'none' : '';
+  const statsGrid = document.getElementById('stats-grid');
+  if (statsGrid) statsGrid.style.gridTemplateColumns = isAdmin ? 'repeat(3,1fr)' : 'repeat(4,1fr)';
+}
+
+function setupAdminFilters() {
+  const isAdmin = isCurrentUserAdmin();
+  const ownerOptions = USERS.filter(u => !u.isAdmin)
+    .map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+  const logFilter = document.getElementById('filterOwner');
+  const billFilter = document.getElementById('bill-filter-owner');
+  logFilter.style.display = isAdmin ? 'inline-block' : 'none';
+  billFilter.style.display = isAdmin ? 'inline-block' : 'none';
+  if (isAdmin) {
+    logFilter.innerHTML = '<option value="">ทุกคน</option>' + ownerOptions;
+    billFilter.innerHTML = '<option value="">ทุกคน</option>' + ownerOptions;
+  }
+}
+
+function logout() {
+  if (!confirm('ออกจากระบบ?')) return;
+  sessionStorage.removeItem('hkt_user');
+  if (logsUnsub) { logsUnsub(); logsUnsub = null; }
+  if (billsUnsub) { billsUnsub(); billsUnsub = null; }
+  currentUser = null; logs = []; bills = []; selectedUser = null;
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('mainApp').style.display = 'none';
+  document.querySelectorAll('.user-opt').forEach(e => e.classList.remove('selected'));
+  document.getElementById('login-btn').disabled = true;
+  document.getElementById('login-auth-row').classList.remove('show');
+  document.getElementById('login-password').value = '';
+  document.getElementById('filterOwner').style.display = 'none';
+  document.getElementById('bill-filter-owner').style.display = 'none';
+}
+
+// ====== PAGES ======
+function showPage(id, btn) {
+  if (isCurrentUserAdmin() && (id === 'add' || id === 'bills')) {
+    id = 'dashboard';
+    btn = document.querySelectorAll('.nav-item')[0];
+  }
+  if (!isCurrentUserAdmin() && id === 'stats') {
+    id = 'dashboard';
+    btn = document.querySelectorAll('.nav-item')[0];
+  }
+  sessionStorage.setItem('hkt_page', id);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+  const targetPage = document.getElementById('page-' + id);
+  // force a reflow so the enter-animation replays every time the menu is switched,
+  // even if this same page was already shown before (and the animation already ran once)
+  targetPage.style.animation = 'none';
+  void targetPage.offsetWidth; // reflow
+  targetPage.style.animation = '';
+  targetPage.classList.add('active');
+
+  if (btn) btn.classList.add('active');
+  const titles = { dashboard:'ภาพรวมการทำงาน', logs:'บันทึกงานทั้งหมด', add:'เพิ่มงานใหม่', bills:'บิลและใบแจ้งหนี้', stats:'สถิติการทำงาน' };
+  animateTitleLetters(titles[id] || '');
+  document.getElementById('monthNav').style.display = (id === 'add') ? 'none' : 'flex';
+  if (id === 'dashboard') renderDash();
+  if (id === 'logs') renderLogs();
+  if (id === 'bills') renderBills();
+  if (id === 'stats') renderStats();
+}
+function gotoAdd() { if (isCurrentUserAdmin()) return; showPage('add', document.querySelector('.nav-item:nth-child(3)')); }
+function gotoBills() { if (isCurrentUserAdmin()) return; showPage('bills', document.querySelector('.nav-item:nth-child(4)')); }
+
+// ====== Helper: stagger fade-in for freshly-rendered table rows ======
+function staggerRows(tbodyEl) {
+  if (!tbodyEl) return;
+  Array.from(tbodyEl.children).forEach((tr, i) => {
+    tr.style.setProperty('--ri', i);
+  });
+}
+
+// ====== DASHBOARD ======
+function renderDash() {
+  const monthLogs = logs.filter(l => isInSelectedMonth(l.date));
+  document.getElementById('s-total').textContent = monthLogs.length;
+  document.getElementById('s-total-sub').textContent = (isCurrentUserAdmin() ? 'ของทุกคน' : 'เฉพาะ') + ' · เดือนนี้';
+  document.getElementById('s-inprog').textContent = monthLogs.filter(l => l.status === 'กำลังทำ').length;
+  document.getElementById('s-done').textContent = monthLogs.filter(l => l.status === 'เสร็จแล้ว').length;
+  // การ์ดนี้แสดงเฉพาะผู้ใช้ทั่วไป (แอดมินถูกซ่อนไว้ใน setupRoleUI) — แสดงยอดรวมงานทั้งหมดของผู้ใช้คนนี้ในทุกๆ เดือน
+  document.getElementById('s-bills').textContent = logs.length;
+  const recent = [...monthLogs].reverse().slice(0, 10);
+  const rb = document.getElementById('recent-tbody');
+  rb.innerHTML = recent.length
+    ? recent.map(l => `<tr>
+        <td data-label="โปรเจกต์" style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${l.project}</td>
+        <td data-label="สถานะ"><span class="badge ${STATUS_BADGE[l.status] || ''}">${l.status}</span></td>
+        <td data-label="วันที่" style="color:#888;font-size:12px">${l.date || '-'}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="3"><div class="empty-pretty">ยังไม่มีข้อมูลในเดือนนี้</div></td></tr>';
+  staggerRows(rb);
+
+  // งานตามการไฟฟ้า/งานตามพื้นที่รับผิดชอบ:
+  // - ผู้ใช้ทั่วไป: แสดงตามฟิลด์ "การไฟฟ้าที่แจ้งปัญหา" เหมือนเดิม
+  // - แอดมิน: แสดงยอดรวมงานของแต่ละคน แต่ใช้ "role" (พื้นที่รับผิดชอบ) เป็นป้ายกำกับแทนชื่อ
+  const cs = document.getElementById('client-stats');
+  const csTitle = document.getElementById('client-stats-title');
+  if (isCurrentUserAdmin()) {
+    if (csTitle) csTitle.innerHTML = '<i class="ti ti-users"></i>งานตามพื้นที่รับผิดชอบ';
+    const roleCounts = {};
+    USERS.filter(u => !u.isAdmin).forEach(u => {
+      const roleLabel = u.role || 'ไม่ระบุ';
+      const cnt = monthLogs.filter(l => l.owner === u.name).length;
+      roleCounts[roleLabel] = (roleCounts[roleLabel] || 0) + cnt;
+    });
+    const roleEntries = Object.entries(roleCounts).sort((a, b) => b[1] - a[1]);
+    cs.innerHTML = roleEntries.length
+      ? roleEntries.map(([r, n]) => `<div class="mini-stat-row"><span class="label">${r}</span><span class="value">${n} งาน</span></div>`).join('')
+      : '<div class="empty-pretty">ยังไม่มีข้อมูลในเดือนนี้</div>';
+  } else {
+    if (csTitle) csTitle.innerHTML = '<i class="ti ti-users"></i>งานตามการไฟฟ้า';
+    const clients = {};
+    monthLogs.forEach(l => { const c = l.client || 'ไม่ระบุ'; clients[c] = (clients[c] || 0) + 1; });
+    const entries = Object.entries(clients).sort((a,b) => b[1]-a[1]).slice(0,6);
+    cs.innerHTML = entries.length
+      ? entries.map(([c,n]) => `<div class="mini-stat-row"><span class="label">${c}</span><span class="value">${n} งาน</span></div>`).join('')
+      : '<div class="empty-pretty">ยังไม่มีข้อมูลในเดือนนี้</div>';
+  }
+
+  // เฉพาะแอดมิน: สรุปงานแยกตามผู้บันทึกแต่ละคน (ขึ้นแทนงานล่าสุด/งานตามการไฟฟ้า)
+  const ownerSection = document.getElementById('admin-owner-section');
+  const twoCol = document.getElementById('dashboard-two-col');
+  if (isCurrentUserAdmin()) {
+    ownerSection.style.display = 'block';
+    twoCol.style.display = 'grid';
+    const owners = {};
+    monthLogs.forEach(l => {
+      const name = l.owner || 'ไม่ระบุ';
+      if (!owners[name]) owners[name] = { total: 0, 'กำลังทำ': 0, 'รอตรวจ': 0, 'เสร็จแล้ว': 0, 'ยกเลิก': 0 };
+      owners[name].total++;
+      if (owners[name][l.status] !== undefined) owners[name][l.status]++;
+    });
+    const ownerEntries = Object.entries(owners).sort((a, b) => b[1].total - a[1].total);
+    const tbody = document.getElementById('owner-stats-tbody');
+    tbody.innerHTML = ownerEntries.length
+      ? ownerEntries.map(([name, o]) => `<tr>
+          <td data-label="ผู้บันทึก" style="font-weight:600;color:#5C5277">${name}</td>
+          <td data-label="งานทั้งหมด" style="text-align:center;font-weight:700;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">${o.total}</td>
+          <td data-label="กำลังทำ" style="text-align:center"><span class="badge badge-blue">${o['กำลังทำ']}</span></td>
+          <td data-label="รอตรวจ" style="text-align:center"><span class="badge badge-amber">${o['รอตรวจ']}</span></td>
+          <td data-label="เสร็จแล้ว" style="text-align:center"><span class="badge badge-green">${o['เสร็จแล้ว']}</span></td>
+          <td data-label="ยกเลิก" style="text-align:center"><span class="badge badge-red">${o['ยกเลิก']}</span></td>
+        </tr>`).join('')
+      : '<tr><td colspan="6" class="empty">ยังไม่มีข้อมูลในเดือนนี้</td></tr>';
+    staggerRows(tbody);
+  } else {
+    ownerSection.style.display = 'none';
+    twoCol.style.display = 'grid';
+  }
+}
+
+// ====== LOGS ======
+function renderLogs() {
+  const q = (document.getElementById('search').value || '').toLowerCase();
+  const st = document.getElementById('filterStatus').value;
+  const dt = document.getElementById('filterDate').value;
+  const ow = isCurrentUserAdmin() ? document.getElementById('filterOwner').value : '';
+  let filtered = logs.filter(l => {
+    if (!isInSelectedMonth(l.date)) return false;
+    if (q && !l.project.toLowerCase().includes(q) && !(l.client||'').toLowerCase().includes(q)) return false;
+    if (st && l.status !== st) return false;
+    if (dt && l.date !== dt) return false;
+    if (ow && l.owner !== ow) return false;
+    return true;
+  });
+  const tbody = document.getElementById('log-tbody');
+  tbody.innerHTML = filtered.length
+    ? [...filtered].reverse().map(l => `<tr>
+        <td data-label="โปรเจกต์/ไฟล์" style="font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" title="${l.project}">${l.project}</td>
+        <td data-label="การไฟฟ้า" style="color:#5C5277">${l.client||'-'}</td>
+        <td data-label="วันที่เริ่ม" style="color:#888;font-size:12px;white-space:nowrap">${l.date||'-'}</td>
+        <td data-label="วันที่เสร็จ" style="color:#888;font-size:12px;white-space:nowrap">${l.end||'-'}</td>
+        <td data-label="สถานะ"><span class="badge ${STATUS_BADGE[l.status]||''}">${l.status}</span></td>
+        <td data-label="โน้ต" style="color:#aaa;font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${l.note}">${l.note||'-'}</td>
+        <td data-label="ผู้บันทึก" style="color:#999;font-size:12px;white-space:nowrap">${l.owner||'-'}</td>
+        <td data-label="จัดการ"><div class="action-btns">
+          <button class="icon-btn" onclick="openEdit('${l.id}')">✏️</button>
+          <button class="icon-btn del" onclick="deleteLog('${l.id}')">🗑</button>
+        </div></td>
+      </tr>`).join('')
+    : '<tr><td colspan="8" class="empty">ไม่พบข้อมูลในเดือนนี้</td></tr>';
+  staggerRows(tbody);
+}
+function clearFilters() {
+  document.getElementById('search').value='';
+  document.getElementById('filterStatus').value='';
+  document.getElementById('filterDate').value='';
+  document.getElementById('filterOwner').value='';
+  renderLogs();
+}
+
+// ====== ADD LOG ======
+function saveLog() {
+  const project = document.getElementById('f-project').value.trim();
+  if (!project) { showToast('กรุณาใส่ชื่อโปรเจกต์'); return; }
+  const log = { project,
+    client:document.getElementById('f-client').value.trim(),
+    status:document.getElementById('f-status').value,
+    date:document.getElementById('f-date').value,
+    end:document.getElementById('f-end').value,
+    note:document.getElementById('f-note').value.trim(),
+    owner: currentUser,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp() };
+  db.collection('logs').add(log)
+    .then(() => {
+      clearForm();
+      showToast('บันทึกงานเรียบร้อยแล้ว ✓');
+      showPage('logs', document.querySelector('.nav-item:nth-child(2)'));
+    })
+    .catch(err => { console.error(err); showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); });
+}
+function clearForm() {
+  ['f-project','f-client','f-end','f-note'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('f-status').value='กำลังทำ';
+  document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
+}
+function deleteLog(id) {
+  if (!confirm('ลบรายการนี้?')) return;
+  db.collection('logs').doc(id).delete()
+    .then(() => showToast('ลบรายการแล้ว'))
+    .catch(err => { console.error(err); showToast('ลบไม่สำเร็จ'); });
+}
+
+// ====== EDIT ======
+function openEdit(id) {
+  const l = logs.find(x=>x.id===id); if(!l) return;
+  editId=id;
+  document.getElementById('e-project').value=l.project;
+  document.getElementById('e-client').value=l.client||'';
+  document.getElementById('e-status').value=l.status;
+  document.getElementById('e-date').value=l.date||'';
+  document.getElementById('e-end').value=l.end||'';
+  document.getElementById('e-note').value=l.note||'';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editId=null; }
+function saveEdit() {
+  if (!editId) return;
+  const project=document.getElementById('e-project').value.trim();
+  if(!project){showToast('กรุณาใส่ชื่อโปรเจกต์');return;}
+  const updates = {
+    project,
+    client:document.getElementById('e-client').value.trim(),
+    status:document.getElementById('e-status').value,
+    date:document.getElementById('e-date').value,
+    end:document.getElementById('e-end').value,
+    note:document.getElementById('e-note').value.trim(),
+    lastEditedBy: currentUser
+  };
+  db.collection('logs').doc(editId).update(updates)
+    .then(() => { closeModal(); showToast('แก้ไขเรียบร้อยแล้ว ✓'); })
+    .catch(err => { console.error(err); showToast('แก้ไขไม่สำเร็จ'); });
+}
+
+// ====== BILLS — drag-drop + SheetJS ======
+let loadedWorkbook = null;
+let parsedBillResult = null; // { grandTotal, grandRoutes, perOffice: [{name, routes, normal, repair, total}] }
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.add('drag-over');
+}
+function handleDragLeave(e) {
+  document.getElementById('dropZone').classList.remove('drag-over');
+}
+function handleDrop(e) {
+  e.preventDefault();
+  const zone = document.getElementById('dropZone');
+  zone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file) loadExcelFile(file);
+}
+function handleFileInput(e) {
+  const file = e.target.files[0];
+  if (file) loadExcelFile(file);
+}
+
+function loadExcelFile(file) {
+  if (!file.name.match(/\.(xlsx|xls)$/i)) {
+    showToast('กรุณาเลือกไฟล์ .xlsx หรือ .xls เท่านั้น');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      loadedWorkbook = XLSX.read(e.target.result, { type: 'array' });
+      const sheetNames = loadedWorkbook.SheetNames;
+      const sel = document.getElementById('sheet-select');
+      sel.innerHTML = sheetNames.map((n,i) => `<option value="${i}">${n}</option>`).join('');
+      document.getElementById('sheet-select-wrap').style.display = sheetNames.length > 1 ? 'flex' : 'none';
+
+      const zone = document.getElementById('dropZone');
+      zone.classList.add('has-file');
+      document.getElementById('dropLabel').textContent = '✓ โหลดไฟล์สำเร็จ';
+      document.getElementById('dropFilename').textContent = file.name;
+      showToast(`โหลด "${file.name}" สำเร็จ — กด "คำนวณสรุป"`);
+    } catch(err) {
+      console.error(err);
+      showToast('อ่านไฟล์ไม่สำเร็จ — ตรวจสอบว่าเป็น Excel จริงๆ');
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function onSheetChange() {
+  document.getElementById('bill-calc-result').style.display = 'none';
+  parsedBillResult = null;
+  showToast('เปลี่ยนชีตแล้ว — กด "คำนวณสรุป" ใหม่');
+}
+
+function calcBillSummary() {
+  if (!loadedWorkbook) { showToast('กรุณาลากไฟล์ Excel มาก่อน'); return; }
+
+  const sheetIdx  = parseInt(document.getElementById('sheet-select').value) || 0;
+  const sheetName = loadedWorkbook.SheetNames[sheetIdx];
+  const ws        = loadedWorkbook.Sheets[sheetName];
+  // แปลงเป็น array-of-arrays (col 0–19)
+  const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+
+  // โครงสร้างที่รู้แล้ว:
+  // - แถวชื่อการไฟฟ้า: col[3] มีข้อความ "F0xxxx - กฟอ./กฟย.ชื่อ"
+  // - แถวสรุปสาย: col[4] มีข้อความขึ้นต้นด้วย "จำนวนสายทั้งหมด" และ col[10]="รวมพิมพ์", col[12]=ตัวเลข
+  // - แถวพิมพ์ปกติ: col[10]="พิมพ์ปกติ", col[12]=ตัวเลข
+  // - แถวพิมพ์ซ่อม: col[10]="พิมพ์ซ่อม", col[12]=ตัวเลข
+  // - แถวรวมทุกการไฟฟ้า: col[4] ขึ้นต้น "รวมทุกการไฟฟ้า"
+
+  const perOffice = [];
+  let grandRoutes = 0;
+  let grandNormal = 0;
+  let grandRepair = 0;
+  let grandTotal  = 0;
+  let currentOffice = null;
+
+  raw.forEach((row, i) => {
+    const c3  = String(row[3]  || '').trim();
+    const c4  = String(row[4]  || '').trim();
+    const c10 = String(row[10] || '').trim();
+    const c12 = String(row[12] || '').replace(/,/g,'').trim();
+
+    // แถวชื่อการไฟฟ้า: col3 มีรหัส F0xxxx
+    if (/^F\d{3,}/.test(c3)) {
+      // บันทึกอันก่อนหน้า (ถ้ามี)
+      if (currentOffice) perOffice.push(currentOffice);
+      currentOffice = { name: c3, routes: 0, normal: 0, repair: 0, total: 0 };
+    }
+
+    // แถว "จำนวนสายทั้งหมด X สาย" — ดึงตัวเลขสาย
+    if (c4.startsWith('จำนวนสายทั้งหมด') && currentOffice) {
+      const m = c4.match(/(\d+)/);
+      if (m) currentOffice.routes = parseInt(m[1]);
+    }
+
+    // แถวรวมทุกการไฟฟ้า (grand total)
+    if (c4.startsWith('รวมทุกการไฟฟ้า')) {
+      const m = c4.match(/(\d+)/);
+      if (m) grandRoutes = parseInt(m[1]);
+    }
+
+    // พิมพ์ปกติ / พิมพ์ซ่อม / รวมพิมพ์ — ของการไฟฟ้าปัจจุบัน
+    if (currentOffice) {
+      if (c10 === 'พิมพ์ปกติ')  currentOffice.normal = parseInt(c12) || 0;
+      if (c10 === 'พิมพ์ซ่อม')  currentOffice.repair = parseInt(c12) || 0;
+      if (c10 === 'รวมพิมพ์')   currentOffice.total  = parseInt(c12) || 0;
+    }
+
+    // พิมพ์ปกติทั้งหมด / พิมพ์ซ่อมทั้งหมด / รวมทั้งหมด
+    if (c10 === 'พิมพ์ปกติทั้งหมด') grandNormal = parseInt(c12) || 0;
+    if (c10 === 'พิมพ์ซ่อมทั้งหมด') grandRepair = parseInt(c12) || 0;
+    if (c10 === 'รวมทั้งหมด')        grandTotal  = parseInt(c12) || 0;
+  });
+
+  // push อันสุดท้าย
+  if (currentOffice) perOffice.push(currentOffice);
+
+  if (!perOffice.length && grandTotal === 0) {
+    showToast('ไม่พบข้อมูลในไฟล์นี้ — ตรวจสอบว่าเป็น ReportDailyPrint ที่ถูกต้อง');
+    return;
+  }
+
+  parsedBillResult = { grandRoutes, grandNormal, grandRepair, grandTotal, perOffice };
+
+  // === แสดง summary card (ยอดรวมทั้งหมด) ===
+  document.getElementById('calc-routes').textContent = grandRoutes.toLocaleString();
+  document.getElementById('calc-normal').textContent = grandNormal.toLocaleString();
+  document.getElementById('calc-repair').textContent = grandRepair.toLocaleString();
+  document.getElementById('calc-count').textContent  = grandTotal.toLocaleString();
+
+  // ตารางแยกตามการไฟฟ้า
+  const tbody = document.getElementById('calc-per-office-tbody');
+  tbody.innerHTML = perOffice.map(o => `
+    <tr>
+      <td data-label="การไฟฟ้า" style="color:#5C5277;font-size:12px">${o.name}</td>
+      <td data-label="จำนวนสาย" style="text-align:center;font-weight:700;color:#7F77DD">${o.routes}</td>
+      <td data-label="พิมพ์ปกติ" style="text-align:center;color:#3B6D11">${o.normal.toLocaleString()}</td>
+      <td data-label="พิมพ์ซ่อม" style="text-align:center;color:#A32D2D">${o.repair.toLocaleString()}</td>
+      <td data-label="รวมพิมพ์" style="text-align:center;font-weight:700;color:#D4537E">${o.total.toLocaleString()}</td>
+    </tr>`).join('');
+  staggerRows(tbody);
+
+  document.getElementById('bill-calc-result').style.display = 'block';
+
+  // กรอกค่าลงฟอร์ม (จำนวนสายทั้งหมด + รวมพิมพ์ทั้งหมด)
+  document.getElementById('bill-routes').value      = grandRoutes;
+  document.getElementById('bill-total-count').value = grandTotal;
+
+  showToast(`คำนวณเสร็จ: ${grandRoutes} สาย / ${grandTotal.toLocaleString()} ฉบับ (${perOffice.length} การไฟฟ้า)`);
+}
+
+function clearBillPaste() {
+  loadedWorkbook = null;
+  parsedBillResult = null;
+  document.getElementById('fileInput').value = '';
+  const zone = document.getElementById('dropZone');
+  zone.classList.remove('has-file','drag-over');
+  document.getElementById('dropLabel').textContent = 'ลากไฟล์ Excel มาวางที่นี่';
+  document.getElementById('dropFilename').textContent = '';
+  document.getElementById('sheet-select-wrap').style.display = 'none';
+  document.getElementById('bill-calc-result').style.display = 'none';
+}
+
+// ====== BILLS — บันทึกสรุปประจำวัน ======
+function saveBillSummary() {
+  const date       = document.getElementById('bill-date').value;
+  const routes     = document.getElementById('bill-routes').value.trim();
+  const totalCount = document.getElementById('bill-total-count').value.trim();
+  const paperStart = document.getElementById('bill-paper-start').value.trim();
+  const paperEnd   = document.getElementById('bill-paper-end').value.trim();
+  const damaged    = document.getElementById('bill-paper-damaged').value.trim();
+  const note       = document.getElementById('bill-note').value.trim();
+
+  if (!date)       { showToast('กรุณาเลือกวันที่ของรายงาน'); return; }
+  if (!routes)     { showToast('กรุณาใส่จำนวนสายทั้งหมด'); return; }
+  if (!totalCount) { showToast('กรุณาใส่จำนวนฉบับทั้งหมด'); return; }
+
+  const record = {
+    date, routes: parseInt(routes) || 0,
+    totalCount: parseInt(totalCount) || 0,
+    paperStart, paperEnd, damaged, note,
+    owner: currentUser,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  db.collection('bills').add(record)
+    .then(() => {
+      showToast('บันทึกสรุปบิลเรียบร้อย ✓');
+      clearBillForm();
+    })
+    .catch(err => { console.error(err); showToast('บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง'); });
+}
+
+function clearBillForm() {
+  ['bill-routes','bill-total-count','bill-paper-start','bill-paper-end','bill-paper-damaged','bill-note'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('bill-date').value = new Date().toISOString().split('T')[0];
+}
+
+// ====== BILLS — render ตาราง ======
+function renderBills() {
+  const filterDate  = document.getElementById('bill-filter-date').value;
+  const filterOwner = isCurrentUserAdmin() ? document.getElementById('bill-filter-owner').value : '';
+  const filtered    = bills.filter(b => {
+    if (!isInSelectedMonth(b.date)) return false;
+    if (filterDate && b.date !== filterDate) return false;
+    if (filterOwner && b.owner !== filterOwner) return false;
+    return true;
+  });
+  const tbody      = document.getElementById('bill-tbody');
+  tbody.innerHTML  = filtered.length
+    ? [...filtered].reverse().map(b => `<tr>
+        <td data-label="วันที่" style="white-space:nowrap;color:#666;font-weight:600">${b.date||'-'}</td>
+        <td data-label="จำนวนสาย" style="font-weight:700;color:#7F77DD;text-align:center">${b.routes||0}</td>
+        <td data-label="จำนวนฉบับ" style="font-weight:700;color:#D4537E;text-align:center">${(b.totalCount||0).toLocaleString()}</td>
+        <td data-label="เลขบิลเริ่ม" style="font-size:12px;font-family:monospace">${b.paperStart||'-'}</td>
+        <td data-label="เลขบิลสิ้นสุด" style="font-size:12px;font-family:monospace">${b.paperEnd||'-'}</td>
+        <td data-label="บิลชำรุด" style="color:#A32D2D;font-size:12px">${b.damaged||'-'}</td>
+        <td data-label="หมายเหตุ" style="color:#888;font-size:12px">${b.note||'-'}</td>
+        <td data-label="ผู้บันทึก" style="color:#999;font-size:12px;white-space:nowrap">${b.owner||'-'}</td>
+        <td data-label="จัดการ"><button class="icon-btn del" onclick="deleteBill('${b.id}')">🗑</button></td>
+      </tr>`).join('')
+    : '<tr><td colspan="9" class="empty">ยังไม่มีข้อมูลในเดือนนี้ — บันทึกสรุปบิลจากฟอร์มด้านบน</td></tr>';
+  staggerRows(tbody);
+}
+
+function deleteBill(id) {
+  if (!confirm('ลบรายการนี้?')) return;
+  db.collection('bills').doc(id).delete()
+    .then(() => showToast('ลบรายการแล้ว'))
+    .catch(err => { console.error(err); showToast('ลบไม่สำเร็จ'); });
+}
+function clearAllBills() {
+  if (!bills.length) return;
+  if (!confirm('ล้างข้อมูลบิลทั้งหมดของคุณ? การกระทำนี้ไม่สามารถย้อนกลับได้')) return;
+  const batch = db.batch();
+  bills.forEach(b => batch.delete(db.collection('bills').doc(b.id)));
+  batch.commit()
+    .then(() => showToast('ล้างข้อมูลทั้งหมดแล้ว'))
+    .catch(err => { console.error(err); showToast('ล้างข้อมูลไม่สำเร็จ'); });
+}
+
+// ====== STATS (เฉพาะแอดมิน) ======
+function renderStats() {
+  const monthLogs = logs.filter(l => isInSelectedMonth(l.date));
+  const chartTitleEl = document.getElementById('stats-chart-title');
+
+  if (isCurrentUserAdmin()) {
+    // แอดมิน: กราฟแสดงยอดงานรวมของแต่ละคน (ใช้ role เป็นป้ายกำกับ) เฉพาะเดือนที่เลือกอยู่เท่านั้น
+    if (chartTitleEl) chartTitleEl.textContent = 'งานแต่ละคน (เดือนนี้)';
+    const roleCounts = {};
+    USERS.filter(u => !u.isAdmin).forEach(u => {
+      const roleLabel = u.role || 'ไม่ระบุ';
+      const cnt = monthLogs.filter(l => l.owner === u.name).length;
+      roleCounts[roleLabel] = (roleCounts[roleLabel] || 0) + cnt;
+    });
+    const bars = Object.entries(roleCounts).map(([label, count]) => ({ label, count }));
+    const maxC = Math.max(...bars.map(b => b.count), 1);
+    document.getElementById('bar-chart').innerHTML = bars.length
+      ? bars.map((b,i) => `
+        <div class="bar-col" style="opacity:0;animation:blockEnter .4s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:${i*0.05}s">
+          <div class="bar-cnt">${b.count > 0 ? b.count : ''}</div>
+          <div class="bar" style="height:${Math.round((b.count/maxC)*90)}px"></div>
+          <div class="bar-lbl" style="font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48px" title="${b.label}">${b.label}</div>
+        </div>`).join('')
+      : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูลในเดือนนี้</p>';
+  } else {
+    // ผู้ใช้ทั่วไป: กราฟงานแต่ละวัน (7 วันล่าสุด) เหมือนเดิม
+    if (chartTitleEl) chartTitleEl.textContent = 'งานแต่ละวัน (7 วันล่าสุด)';
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const str   = d.toISOString().split('T')[0];
+      const label = ['อา','จ','อ','พ','พฤ','ศ','ส'][d.getDay()];
+      days.push({ str, label, count: logs.filter(l => l.date === str).length });
+    }
+    const maxC = Math.max(...days.map(d => d.count), 1);
+    document.getElementById('bar-chart').innerHTML = days.map((d,i) => `
+      <div class="bar-col" style="opacity:0;animation:blockEnter .4s cubic-bezier(0.22,1,0.36,1) forwards;animation-delay:${i*0.05}s">
+        <div class="bar-cnt">${d.count > 0 ? d.count : ''}</div>
+        <div class="bar" style="height:${Math.round((d.count/maxC)*90)}px"></div>
+        <div class="bar-lbl">${d.label}</div>
+      </div>`).join('');
+  }
+
+  const statusCount = {};
+  monthLogs.forEach(l => statusCount[l.status] = (statusCount[l.status] || 0) + 1);
+  document.getElementById('status-breakdown').innerHTML = Object.entries(statusCount).length
+    ? Object.entries(statusCount).map(([s,n]) => `
+        <div class="mini-stat-row">
+          <span class="label"><span class="badge ${STATUS_BADGE[s]||''}">${s}</span></span>
+          <span class="value">${n} รายการ</span>
+        </div>`).join('')
+    : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูลในเดือนนี้</p>';
+  const chTitle = document.getElementById('client-hours-title');
+  if (isCurrentUserAdmin()) {
+    // แอดมิน: แสดงยอดงานรวม "ทุกเดือน" (ทุกช่วงเวลา) แยกตาม role/พื้นที่รับผิดชอบของแต่ละคน
+    if (chTitle) chTitle.textContent = 'งานรวมทุกเดือน (แยกตามพื้นที่)';
+    const roleAllTime = {};
+    USERS.filter(u => !u.isAdmin).forEach(u => {
+      const roleLabel = u.role || 'ไม่ระบุ';
+      const cnt = logs.filter(l => l.owner === u.name).length;
+      roleAllTime[roleLabel] = (roleAllTime[roleLabel] || 0) + cnt;
+    });
+    document.getElementById('client-hours').innerHTML = Object.entries(roleAllTime).length
+      ? Object.entries(roleAllTime).sort((a,b) => b[1]-a[1]).map(([r,n]) => `
+          <div class="mini-stat-row"><span class="label">${r}</span><span class="value">${n} งาน</span></div>`).join('')
+      : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูล</p>';
+  } else {
+    if (chTitle) chTitle.textContent = 'งานต่อการไฟฟ้า';
+    const ccount = {};
+    monthLogs.forEach(l => { const c = l.client || 'ไม่ระบุ'; ccount[c] = (ccount[c] || 0) + 1; });
+    document.getElementById('client-hours').innerHTML = Object.entries(ccount).length
+      ? Object.entries(ccount).sort((a,b) => b[1]-a[1]).map(([c,n]) => `
+          <div class="mini-stat-row"><span class="label">${c}</span><span class="value">${n} งาน</span></div>`).join('')
+      : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูลในเดือนนี้</p>';
+  }
+}
+
+// ====== EXPORT ======
+function exportCSV() {
+  if (!logs.length) { showToast('ไม่มีข้อมูลที่จะ Export'); return; }
+  const headers = ['ID','ผู้บันทึก','โปรเจกต์','การไฟฟ้าที่แจ้งปัญหา','สถานะ','วันที่เริ่มดำเนินการ','วันที่ดำเนินการเสร็จ','โน้ต'];
+  const rows = logs.map(l => [l.id,l.owner||'',l.project,l.client||'',l.status,l.date||'',l.end||'',l.note||'']
+    .map(v => '"'+String(v).replace(/"/g,'""')+'"').join(','));
+  const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = 'dw-worklog-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  showToast('Export สำเร็จ ✓');
+}
+
+// ====== TOAST ======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ====== SIDEBAR FIREFLIES ======
+function spawnFireflies() {
+  const wrap = document.getElementById('sidebarFireflies');
+  if (!wrap) return;
+  const colors = ['#7F77DD','#D4537E','#F0997B'];
+  for (let i = 0; i < 11; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'sb-firefly';
+    const size = 4 + Math.random() * 3;
+    const color = colors[i % colors.length];
+    dot.style.width = size + 'px';
+    dot.style.height = size + 'px';
+    dot.style.left = (8 + Math.random() * 185) + 'px';
+    dot.style.background = color;
+    dot.style.boxShadow = '0 0 7px 3px ' + color + '99';
+    dot.style.setProperty('--dx', (Math.random() * 30 - 15) + 'px');
+    dot.style.animationDuration = (7 + Math.random() * 6) + 's';
+    dot.style.animationDelay = (Math.random() * 8) + 's';
+    wrap.appendChild(dot);
+  }
+}
+
+function spawnPageBgFireflies() {
+  const wrap = document.getElementById('pageBgFireflies');
+  if (!wrap) return;
+  const colors = ['#7F77DD','#D4537E','#F0997B','#AFA9EC','#ED93B1'];
+  const count = 26;
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'pbg-firefly';
+    const size = 3 + Math.random() * 4;
+    const color = colors[i % colors.length];
+    dot.style.width = size + 'px';
+    dot.style.height = size + 'px';
+    dot.style.left = (Math.random() * 100) + 'vw';
+    dot.style.background = color;
+    dot.style.boxShadow = '0 0 8px 3px ' + color + '88';
+    dot.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
+    dot.style.animationDuration = (14 + Math.random() * 12) + 's';
+    dot.style.animationDelay = (Math.random() * 18) + 's';
+    wrap.appendChild(dot);
+  }
+}
+
+// ====== INIT ======
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+document.getElementById('bill-date').value = new Date().toISOString().split('T')[0];
+renderLoginUsers();
+spawnFireflies();
+spawnPageBgFireflies();
+updateMonthLabel();
+
+const savedUser = sessionStorage.getItem('hkt_user');
+if (savedUser && USERS.find(u => u.name === savedUser)) {
+  currentUser = savedUser;
+  setSyncStatus('connecting');
+  subscribeLogs();
+  subscribeBills();
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainApp').style.display = 'flex';
+  document.getElementById('sidebar-name').textContent = currentUser;
+  renderSidebarAvatar();
+  const savedPage = sessionStorage.getItem('hkt_page');
+  if (savedPage) {
+    const navBtns = ['dashboard','logs','add','bills','stats'];
+    const idx = navBtns.indexOf(savedPage);
+    const btn = idx >= 0 ? document.querySelectorAll('.nav-item')[idx] : null;
+    showPage(savedPage, btn);
+  } else {
+    animateTitleLetters('ภาพรวมการทำงาน');
+  }
+}
+</script>
+</body>
+</html>

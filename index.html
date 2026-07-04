@@ -341,15 +341,53 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 
 /* ── animated themed background inside each user card ── */
 .uopt-photo,.uopt-inner{z-index:2}
-.uopt-bg{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;border-radius:13px}
-.uopt-bg span{position:absolute;border-radius:50%;filter:blur(.3px)}
-@keyframes uoptDrift1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(6px,7px) scale(1.15)}}
-@keyframes uoptDrift2{0%,100%{transform:translate(0,0) scale(1.05)}50%{transform:translate(-6px,-5px) scale(.9)}}
-@keyframes uoptDrift3{0%,100%{transform:translate(0,0) scale(1);opacity:.5}50%{transform:translate(-5px,6px) scale(1.2);opacity:.85}}
-.uopt-bg .qb1{width:44px;height:44px;top:-14px;right:-10px;background:radial-gradient(circle at 35% 35%,#C9C2F2,#7F77DD 70%,transparent 100%);opacity:.28;animation:uoptDrift1 8s ease-in-out infinite}
-.uopt-bg .qb2{width:32px;height:32px;bottom:-12px;left:42%;background:radial-gradient(circle at 35% 35%,#F4B9CF,#D4537E 70%,transparent 100%);opacity:.24;animation:uoptDrift2 10s ease-in-out infinite}
-.uopt-bg .qb3{width:24px;height:24px;top:22%;right:22%;background:radial-gradient(circle at 35% 35%,#FBD3BE,#F0997B 70%,transparent 100%);opacity:.22;animation:uoptDrift3 7s ease-in-out infinite}
-.user-opt.selected .uopt-bg span{opacity:.4}
+.uopt-bg{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none;border-radius:13px;transition:opacity .25s}
+
+/* พื้นไล่สีบางๆ เลื่อนไปมาช้าๆ ให้เข้ากับธีมโดยไม่วุ่นวาย */
+@keyframes uoptWash{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.uopt-bg::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,var(--uc1,#7F77DD)14%,var(--uc2,#D4537E)50%,var(--uc3,#F0997B)86%);
+  background-size:220% 220%;
+  opacity:.09;
+  animation:uoptWash 10s ease-in-out infinite;
+}
+.user-opt.selected .uopt-bg::before{opacity:.18}
+.user-opt:hover .uopt-bg::before{opacity:.14}
+
+/* แสงนวลมุมเดียว เต้นเบาๆ แทนฟองหลายจุด */
+@keyframes uoptGlowPulse{0%,100%{transform:scale(1);opacity:.30}50%{transform:scale(1.14);opacity:.5}}
+.uopt-bg .glow{
+  position:absolute;width:92px;height:92px;top:-32px;right:-30px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff,var(--uc1,#7F77DD) 62%,transparent 100%);
+  filter:blur(2px);opacity:.30;
+  animation:uoptGlowPulse 6s ease-in-out infinite;
+}
+.user-opt.selected .uopt-bg .glow{opacity:.5}
+.user-opt:hover .uopt-bg .glow{opacity:.42}
+
+/* แสงวิ่งทแยงมุมพาดผ่านการ์ดเบาๆ เป็นจังหวะ */
+@keyframes uoptShine{
+  0%{transform:translateX(-130%) skewX(-18deg)}
+  35%,100%{transform:translateX(240%) skewX(-18deg)}
+}
+.uopt-bg .shine{
+  position:absolute;top:-25%;left:0;width:30%;height:150%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:translateX(-130%) skewX(-18deg);
+  animation:uoptShine 5.5s ease-in-out infinite;
+}
+
+/* ── กรอบไล่สีบางๆ วิ่งไล่รอบการ์ดตอนเลือก ── */
+@keyframes uoptRingSpin{to{transform:rotate(360deg)}}
+.user-opt::after{
+  content:'';position:absolute;inset:0;border-radius:14px;padding:1.5px;
+  background:conic-gradient(from 0deg,var(--uc1,#7F77DD),var(--uc2,#D4537E),var(--uc3,#F0997B),var(--uc1,#7F77DD));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:0;transition:opacity .25s;pointer-events:none;z-index:1;
+}
+.user-opt.selected::after{opacity:1;animation:uoptRingSpin 4s linear infinite}
 
 #login-btn:disabled{opacity:0.4;cursor:not-allowed;filter:grayscale(0.3)}
 
@@ -1293,6 +1331,18 @@ function isCurrentUserAdmin() {
 const AVATAR_COLORS = ['#7F77DD','#D4537E','#F0997B','#185FA5','#3B6D11','#534AB7','#ED93B1','#378ADD','#1D9E75'];
 const SLASH_COLORS  = ['#7F77DD','#D4537E','#F0997B','#378ADD','#3B6D11','#AFA9EC','#D4537E','#534AB7','#1D9E75'];
 
+// ชุดสี 3 โทนตามธีมเว็บ (ม่วง/ชมพู/ส้ม) สลับลำดับ+เฉดกันไปในแต่ละการ์ด
+// เพื่อให้พื้นหลังของกล่อง user แต่ละคนดูมีสีสันหลากหลายแต่ยังกลมกลืนกับธีมโดยรวม
+const UOPT_THEME_TRIPLETS = [
+  ['#7F77DD', '#D4537E', '#F0997B'],
+  ['#D4537E', '#F0997B', '#7F77DD'],
+  ['#F0997B', '#7F77DD', '#D4537E'],
+  ['#534AB7', '#ED93B1', '#F6BFA4'],
+  ['#378ADD', '#D4537E', '#F0997B'],
+  ['#7F77DD', '#3B6D11', '#F0997B'],
+  ['#A89AE8', '#D4537E', '#F6BFA4'],
+];
+
 // ====== LOGIN ======
 function renderLoginUsers() {
   const list = document.getElementById('user-list');
@@ -1303,8 +1353,18 @@ function renderLoginUsers() {
       ? `<img src="${u.photo}" alt="${u.name}" onerror="this.style.display='none';this.parentElement.style.background='${avatarColor}';this.nextElementSibling.style.display='flex'"><span class="uopt-photo-initial" style="display:none">${initial}</span>`
       : `<span class="uopt-photo-initial" style="display:flex;background:${avatarColor}">${initial}</span>`;
     const roleLabel = u.role || 'เจ้าหน้าที่';
+    const [uc1, uc2, uc3] = UOPT_THEME_TRIPLETS[i % UOPT_THEME_TRIPLETS.length];
     return `
-    <div class="user-opt" onclick="selectUser(this,'${u.name}')" title="${u.name.trim()}">
+    <div class="user-opt" onclick="selectUser(this,'${u.name}')" title="${u.name.trim()}" style="--uc1:${uc1};--uc2:${uc2};--uc3:${uc3}">
+      <div class="uopt-bg">
+        <span class="qb1"></span>
+        <span class="qb2"></span>
+        <span class="qb3"></span>
+        <span class="qb4"></span>
+        <span class="spk spk1"></span>
+        <span class="spk spk2"></span>
+        <span class="spk spk3"></span>
+      </div>
       <div class="uopt-photo">
         <div class="uopt-photo-inner">${photoHTML}</div>
       </div>

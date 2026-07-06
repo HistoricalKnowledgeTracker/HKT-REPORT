@@ -95,7 +95,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 .avatar-wrap{position:relative;flex-shrink:0}
 .avatar{width:34px;height:34px;border-radius:50%;background:#EBF3FB;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#185FA5;flex-shrink:0}
 .avatar-status{position:absolute;bottom:-1px;right:-1px;width:11px;height:11px;border-radius:50%;background:#3BA55D;border:2.5px solid #fff}
-.user-name{font-size:13px;font-weight:500;white-space:normal;overflow:visible;text-overflow:unset;line-height:1.3;word-break:break-word}
+.user-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;min-width:0;flex:1 1 auto}
 .user-role{font-size:11px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px}
 .user-card-bell{width:28px;height:28px;border-radius:50%;border:none;background:transparent;display:flex;align-items:center;justify-content:center;color:#888;flex-shrink:0;cursor:pointer;font-size:15px;transition:background .15s,color .15s}
 .user-card-bell:hover{background:#e4e4de;color:#1a1a1a}
@@ -156,7 +156,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 
 /* Stats */
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat-card{background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(124,77,255,0.06);display:flex;align-items:center;gap:12px}
+.stat-card{background:linear-gradient(160deg,#ffffff 0%,#fdf5fa 58%,#f6f1fb 100%);border:1px solid #e8e8e4;border-radius:10px;padding:14px 16px;position:relative;overflow:hidden;box-shadow:0 2px 10px rgba(124,77,255,0.06);display:flex;align-items:center;gap:12px}
 .stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;opacity:0.15}
 .stat-card.c1::before{background:#7F77DD}
 .stat-card.c2::before{background:#185FA5}
@@ -173,7 +173,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 .stat-sub{font-size:11px;color:#aaa;margin-top:3px}
 
 /* Section */
-.section{background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:16px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(124,77,255,0.06)}
+.section{background:linear-gradient(160deg,#ffffff 0%,#fdf5fa 55%,#f6f1fb 100%);border:1px solid #e8e8e4;border-radius:10px;padding:16px 18px;margin-bottom:16px;box-shadow:0 2px 10px rgba(124,77,255,0.06)}
 .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .section-title{font-size:14px;font-weight:600;color:#1a1a1a;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-flex;align-items:center;gap:6px}
 
@@ -208,6 +208,8 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 
 /* Two col */
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two-col.single-col{grid-template-columns:1fr}
+#stats-two-col{grid-template-columns:0.8fr 1.2fr}
 
 /* Mini stat */
 .mini-stat-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f5f5f0;font-size:13px}
@@ -225,28 +227,57 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 
 /* Bar chart */
 .chart-wrap{display:flex;align-items:flex-end;gap:6px;height:120px;padding:4px 0}
+.chart-wrap.donut-mode{height:auto;align-items:center;padding:6px 2px}
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .bar{width:100%;background:#185FA5;border-radius:3px 3px 0 0;min-height:3px;transition:height 0.3s}
 .bar-lbl{font-size:10px;color:#aaa}
 .bar-cnt{font-size:10px;color:#185FA5;font-weight:600}
 
 /* Donut chart (งานแต่ละคน — แบ่งสีตามพื้นที่/การไฟฟ้า) */
-.donut-wrap{display:flex;align-items:center;gap:22px;flex-wrap:wrap;padding:6px 2px}
-.donut-chart{width:148px;height:148px;flex-shrink:0;border-radius:50%;position:relative;box-shadow:0 6px 18px rgba(124,77,255,0.18);transition:background .4s}
-.donut-hole{position:absolute;inset:23%;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #f0f0ea}
-.donut-total{font-size:22px;font-weight:700;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.donut-total-lbl{font-size:9.5px;color:#999;margin-top:2px}
-.donut-legend{flex:1;min-width:190px;display:flex;flex-direction:column;gap:10px}
-.donut-legend-row{display:flex;align-items:flex-start;gap:8px;font-size:12.5px}
-.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.donut-legend-label{flex:1;color:#4A3B68;white-space:normal;overflow:visible;text-overflow:unset;min-width:0;line-height:1.35}
-.donut-legend-count{font-weight:600;color:#1a1a1a;white-space:nowrap;flex-shrink:0;margin-top:1px}
-.donut-legend-pct{font-weight:400;color:#aaa;font-size:11px}
+.donut-wrap{display:flex;align-items:flex-start;gap:30px;flex-wrap:wrap;padding:10px 4px}
+.donut-chart-wrap{position:relative;flex-shrink:0;width:190px;height:190px;transition:transform .25s}
+.donut-chart-wrap:hover{transform:scale(1.03)}
+@keyframes donutGlowSpin{to{transform:rotate(360deg)}}
+@keyframes donutGlowPulse{0%,100%{opacity:.35}50%{opacity:.6}}
+.donut-glow{position:absolute;inset:-14px;border-radius:50%;filter:blur(20px);opacity:.4;animation:donutGlowSpin 14s linear infinite,donutGlowPulse 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes donutPop{0%{opacity:0;transform:scale(.55)}70%{transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@keyframes donutRingSpin{to{transform:rotate(360deg)}}
+.donut-ring-spin{position:absolute;inset:0;border-radius:50%;animation:donutRingSpin 16s linear infinite;animation-fill-mode:both}
+.donut-ring{width:100%;height:100%;border-radius:50%;box-shadow:0 10px 26px rgba(124,77,255,0.22);animation:donutPop .7s cubic-bezier(0.22,1,0.36,1) both}
+.donut-hole{position:absolute;inset:25%;background:#fff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px #f0f0ea;z-index:2}
+.donut-total{font-size:32px;font-weight:800;background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+.donut-total-lbl{font-size:11px;color:#999;margin-top:3px;font-weight:600}
+.donut-legend{flex:1;min-width:210px;display:flex;flex-direction:column;gap:13px}
+.donut-legend-row{display:flex;align-items:flex-start;gap:9px;font-size:14px;opacity:0;animation:blockEnter .45s cubic-bezier(0.22,1,0.36,1) forwards}
+.donut-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;margin-top:4px;box-shadow:0 0 0 3px rgba(0,0,0,0.04)}
+.donut-legend-label{flex:1;color:#4A3B68;white-space:normal;overflow:visible;text-overflow:unset;min-width:0;line-height:1.4;font-weight:500}
+.donut-legend-count{font-weight:700;font-size:14px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.donut-legend-pct{font-weight:500;color:#aaa;font-size:12px}
+
+/* Radar / spider chart (งานรวมทุกเดือน แยกตามพื้นที่ — สำหรับแอดมิน) */
+.radar-wrap{display:flex;align-items:flex-start;gap:64px;flex-wrap:wrap;padding:10px 4px}
+.radar-chart-holder{position:relative;flex-shrink:0;width:270px;height:270px}
+.radar-glow{position:absolute;inset:12%;border-radius:50%;filter:blur(26px);opacity:.32;background:conic-gradient(from 0deg,#7F77DD,#D4537E,#F0997B,#7F77DD);animation:donutGlowSpin 16s linear infinite,donutGlowPulse 3.6s ease-in-out infinite;pointer-events:none}
+.radar-svg{position:relative;width:100%;height:100%;overflow:visible}
+.radar-grid{fill:none;stroke:#e9defa;stroke-width:1}
+.radar-grid.outer{stroke:#d9c8f0}
+.radar-axis{stroke:#efe6f9;stroke-width:1}
+.radar-data{fill:url(#radarFill);fill-opacity:.42;stroke:#9B6FDD;stroke-width:2;stroke-linejoin:round}
+.radar-data-group{transform-origin:150px 150px;animation:radarPop .8s cubic-bezier(0.22,1,0.36,1) both,radarBreathe 4.4s ease-in-out infinite .8s}
+@keyframes radarPop{0%{opacity:0;transform:scale(.35)}70%{transform:scale(1.045)}100%{opacity:1;transform:scale(1)}}
+@keyframes radarBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+.radar-dot{filter:drop-shadow(0 0 3px rgba(212,83,126,.5))}
+.radar-label{font-size:12px;font-weight:700;fill:#4A3B68}
+.radar-legend{flex:0 1 380px;min-width:210px;max-width:380px;display:flex;flex-direction:column;gap:10px}
+.radar-legend-row{display:flex;align-items:center;gap:9px;font-size:14px;opacity:0;animation:blockEnter .4s cubic-bezier(0.22,1,0.36,1) forwards}
+.radar-legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.radar-legend-label{flex:1;color:#4A3B68;font-weight:500;line-height:1.3}
+.radar-legend-count{font-weight:700;font-size:14px;white-space:nowrap}
 
 /* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:12px;border:1px solid #e8e8e4;padding:24px;width:520px;max-height:90vh;overflow-y:auto}
+.modal{background:linear-gradient(160deg,#ffffff 0%,#fdf5fa 55%,#f6f1fb 100%);border-radius:12px;border:1px solid #e8e8e4;padding:24px;width:520px;max-height:90vh;overflow-y:auto}
 .modal-title{font-size:16px;font-weight:600;margin-bottom:18px}
 .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
 
@@ -296,7 +327,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 .bill-summary-card{background:linear-gradient(135deg,#fdf2f6,#f3e8fb);border:1.5px solid #e8d4f0;border-radius:12px;padding:16px 20px;margin-top:16px}
 .bill-summary-title{font-size:12px;font-weight:600;color:#7F77DD;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .bill-summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.bill-sum-item{background:#fff;border:1px solid #e8e8e4;border-radius:8px;padding:10px 14px;text-align:center}
+.bill-sum-item{background:linear-gradient(160deg,#ffffff 0%,#fdf6fa 100%);border:1px solid #e8e8e4;border-radius:8px;padding:10px 14px;text-align:center}
 .bill-sum-label{font-size:11px;color:#999;margin-bottom:4px}
 .bill-sum-value{font-size:20px;font-weight:700;background:linear-gradient(135deg,#7F77DD,#D4537E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .bill-sum-sub{font-size:10px;color:#bbb;margin-top:2px}
@@ -510,6 +541,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 
   /* --- Stack two-column sections --- */
   .two-col{grid-template-columns:1fr}
+  #stats-two-col{grid-template-columns:1fr}
   .form-grid{grid-template-columns:1fr}
   .bill-summary-grid{grid-template-columns:repeat(2,1fr)}
 
@@ -524,7 +556,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
   .table thead{display:none}
   .table, .table tbody, .table tr{display:block;width:100%}
   .table tr{
-    background:#fff;
+    background:linear-gradient(160deg,#ffffff 0%,#fdf6fa 100%);
     border:1px solid #f0f0ea;
     border-radius:10px;
     padding:4px 12px;
@@ -559,6 +591,12 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
   /* --- Donut chart: stack centered on narrow screens --- */
   .donut-wrap{flex-direction:column;align-items:center;gap:16px}
   .donut-legend{width:100%;max-height:none}
+  .donut-chart-wrap{width:168px;height:168px}
+
+  /* --- Radar chart: stack centered on narrow screens --- */
+  .radar-wrap{flex-direction:column;align-items:center;gap:16px}
+  .radar-chart-holder{width:230px;height:230px}
+  .radar-legend{width:100%;max-height:none}
 
   /* --- Bar chart: horizontal bars on mobile so long Thai labels stay readable --- */
   .chart-wrap{
@@ -743,9 +781,8 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
             <span class="avatar-status"></span>
           </div>
           <div style="min-width:0">
-            <div style="display:flex;align-items:flex-start;gap:6px">
+            <div style="display:flex;align-items:center;gap:6px;min-width:0">
               <div class="user-name" id="sidebar-name" style="background:linear-gradient(135deg,#7F77DD,#D4537E,#F0997B);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:600">-</div>
-              <span id="sidebar-admin-badge" class="badge badge-amber" style="display:none;font-size:9px;padding:2px 7px;flex-shrink:0;margin-top:1px"></span>
             </div>
             <div class="user-role">คลิกเพื่อออกจากระบบ</div>
           </div>
@@ -1013,7 +1050,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
             </div>
 
             <div class="bill-summary-title" style="margin-top:16px"><i class="ti ti-building"></i> แยกตามการไฟฟ้า</div>
-            <table class="table" style="background:#fff;border-radius:8px;overflow:hidden">
+            <table class="table" style="background:linear-gradient(160deg,#ffffff 0%,#fdf5fa 100%);border-radius:8px;overflow:hidden">
               <thead>
                 <tr>
                   <th>การไฟฟ้า</th>
@@ -1103,17 +1140,21 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 
       <!-- STATS -->
       <div class="page" id="page-stats">
-        <div class="two-col">
+        <div class="two-col" id="stats-two-col">
           <div class="section">
             <div class="section-header"><span class="section-title" id="stats-chart-title">งานแต่ละวัน (7 วันล่าสุด)</span></div>
             <div class="chart-wrap" id="bar-chart"></div>
           </div>
-          <div class="section">
+          <div class="section" id="status-breakdown-section">
             <div class="section-header"><span class="section-title">สรุปสถานะงาน</span></div>
             <div id="status-breakdown"></div>
           </div>
+          <div class="section" id="admin-radar-section" style="display:none">
+            <div class="section-header"><span class="section-title">งานรวมทุกเดือน (แยกตามพื้นที่)</span></div>
+            <div id="client-hours-top"></div>
+          </div>
         </div>
-        <div class="section">
+        <div class="section" id="client-hours-section">
           <div class="section-header"><span class="section-title" id="client-hours-title">งานต่อการไฟฟ้า</span></div>
           <div id="client-hours"></div>
         </div>
@@ -1472,7 +1513,6 @@ function renderSidebarAvatar() {
     el.style.background = color;
     el.innerHTML = `<span style="color:#fff;font-weight:700;font-size:12px">${getInitial(currentUser)}</span>`;
   }
-  document.getElementById('sidebar-admin-badge').style.display = isCurrentUserAdmin() ? 'inline-flex' : 'none';
   setupAdminFilters();
   setupRoleUI();
 }
@@ -2014,6 +2054,21 @@ function clearAllBills() {
 }
 
 // ====== DONUT CHART (สำหรับ "งานแต่ละคน" ของแอดมิน — แบ่งสีตามพื้นที่/การไฟฟ้า) ======
+// แปลงสี hex เป็นสีไล่โทนตามธีมเว็บ (ม่วง -> ชมพู -> ส้ม) ตามตำแหน่ง t (0-1)
+// ใช้แทน AVATAR_COLORS แบบสุ่ม เพื่อให้กราฟวงกลมเข้ากับธีมเสมอไม่ว่าจะมีกี่หมวดหมู่
+function lerpHex(hexA, hexB, t) {
+  const a = hexA.match(/\w\w/g).map(x => parseInt(x, 16));
+  const b = hexB.match(/\w\w/g).map(x => parseInt(x, 16));
+  const c = a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  return '#' + c.map(v => v.toString(16).padStart(2, '0')).join('');
+}
+function themeGradientColor(t) {
+  const stops = ['#7F77DD', '#D4537E', '#F0997B', '#7F77DD'];
+  const segT = Math.max(0, Math.min(1, t)) * (stops.length - 1);
+  const idx = Math.min(Math.floor(segT), stops.length - 2);
+  return lerpHex(stops[idx], stops[idx + 1], segT - idx);
+}
+
 function renderDonutChart(bars, containerEl) {
   const total = bars.reduce((s, b) => s + b.count, 0);
   if (!bars.length || total === 0) {
@@ -2026,27 +2081,136 @@ function renderDonutChart(bars, containerEl) {
     const start = acc;
     const pct = (b.count / total) * 100;
     acc += pct;
-    return { color: AVATAR_COLORS[i % AVATAR_COLORS.length], start, end: acc, pct, label: b.label, count: b.count };
+    // ไล่สีตามธีมของเว็บ (ม่วง/ชมพู/ส้ม) แทนสีสุ่มหลากหลายโทน
+    const t = sorted.length <= 1 ? 0 : i / (sorted.length - 1);
+    return { color: themeGradientColor(t * 0.85), start, end: acc, pct, label: b.label, count: b.count };
   });
   const gradientStr = segs
     .filter(s => s.count > 0)
     .map(s => `${s.color} ${s.start.toFixed(2)}% ${s.end.toFixed(2)}%`)
     .join(', ') || '#eee 0% 100%';
-  const legendHtml = segs.map(s => `
-    <div class="donut-legend-row">
+  const legendHtml = segs.map((s, i) => `
+    <div class="donut-legend-row" style="animation-delay:${(i * 0.06).toFixed(2)}s">
       <span class="donut-dot" style="background:${s.color}"></span>
       <span class="donut-legend-label" title="${s.label}">${s.label}</span>
-      <span class="donut-legend-count">${s.count} งาน <span class="donut-legend-pct">(${s.pct.toFixed(0)}%)</span></span>
+      <span class="donut-legend-count" style="color:${s.color}">${s.count} งาน <span class="donut-legend-pct">(${s.pct.toFixed(0)}%)</span></span>
     </div>`).join('');
   containerEl.innerHTML = `
     <div class="donut-wrap">
-      <div class="donut-chart" style="background:conic-gradient(${gradientStr})">
+      <div class="donut-chart-wrap">
+        <div class="donut-glow" style="background:conic-gradient(${gradientStr})"></div>
+        <div class="donut-ring-spin">
+          <div class="donut-ring" style="background:conic-gradient(${gradientStr})"></div>
+        </div>
         <div class="donut-hole">
-          <div class="donut-total">${total}</div>
+          <div class="donut-total" id="donut-total-num">0</div>
           <div class="donut-total-lbl">งานทั้งหมด</div>
         </div>
       </div>
       <div class="donut-legend">${legendHtml}</div>
+    </div>`;
+
+  // นับตัวเลขไล่ขึ้นจาก 0 ถึงยอดรวมจริง ให้ดูมีชีวิตชีวาทุกครั้งที่แสดงผล
+  const numEl = document.getElementById('donut-total-num');
+  if (numEl) {
+    const duration = 650;
+    const startTime = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      numEl.textContent = Math.round(eased * total);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+}
+
+// ====== RADAR CHART (สำหรับ "งานรวมทุกเดือน แยกตามพื้นที่" ของแอดมิน) ======
+function renderRadarChart(dataArr, containerEl) {
+  const total = dataArr.reduce((s, d) => s + d.count, 0);
+  if (!dataArr.length || total === 0) {
+    containerEl.innerHTML = '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูล</p>';
+    return;
+  }
+  const N = dataArr.length;
+  const maxVal = Math.max(...dataArr.map(d => d.count), 1);
+  const cx = 150, cy = 150, R = 92;
+  const angleFor = i => -Math.PI / 2 + i * (2 * Math.PI / N);
+  const pt = (i, ratio) => {
+    const a = angleFor(i);
+    return [(cx + R * ratio * Math.cos(a)).toFixed(1), (cy + R * ratio * Math.sin(a)).toFixed(1)];
+  };
+
+  const gridPolys = [0.25, 0.5, 0.75, 1].map(lv => {
+    const pts = Array.from({ length: N }, (_, i) => pt(i, lv).join(',')).join(' ');
+    return `<polygon class="radar-grid${lv === 1 ? ' outer' : ''}" points="${pts}"/>`;
+  }).join('');
+
+  const axisLines = Array.from({ length: N }, (_, i) => {
+    const [x, y] = pt(i, 1.02);
+    return `<line class="radar-axis" x1="${cx}" y1="${cy}" x2="${x}" y2="${y}"/>`;
+  }).join('');
+
+  const dataPts = dataArr.map((d, i) => pt(i, d.count / maxVal).join(',')).join(' ');
+
+  const dots = dataArr.map((d, i) => {
+    const [x, y] = pt(i, d.count / maxVal);
+    const color = themeGradientColor(N <= 1 ? 0 : i / (N - 1));
+    return `<circle class="radar-dot" cx="${x}" cy="${y}" r="4.5" fill="${color}"/>`;
+  }).join('');
+
+  // ตัดคำนำหน้าซ้ำๆ ("กฟจ.", "กฟส.", "กฟฉ.") ออกจากป้ายรอบกราฟ ให้ข้อความสั้นลง
+  // ไม่ยื่นไปทับคอลัมน์ลีเจนด์ด้านข้าง (ลีเจนด์ยังคงแสดงชื่อเต็มตามปกติ)
+  const shortAxisLabel = (label) => {
+    const stripped = label.replace(/^กฟ[จสฉ]\.\s*/, '');
+    return stripped.length >= 2 ? stripped : label;
+  };
+
+  const labels = dataArr.map((d, i) => {
+    const a = angleFor(i);
+    const [x, y] = pt(i, 1.22);
+    const cosA = Math.cos(a), sinA = Math.sin(a);
+    let anchor = 'middle';
+    if (cosA > 0.25) anchor = 'start';
+    else if (cosA < -0.25) anchor = 'end';
+    let dy = 3;
+    if (sinA < -0.5) dy = -3;
+    else if (sinA > 0.5) dy = 10;
+    return `<text class="radar-label" x="${x}" y="${y}" text-anchor="${anchor}" dy="${dy}">${shortAxisLabel(d.label)}</text>`;
+  }).join('');
+
+  const legendHtml = [...dataArr]
+    .map((d, i) => ({ ...d, color: themeGradientColor(N <= 1 ? 0 : i / (N - 1)) }))
+    .sort((a, b) => b.count - a.count)
+    .map((d, i) => `
+      <div class="radar-legend-row" style="animation-delay:${(i * 0.05).toFixed(2)}s">
+        <span class="radar-legend-dot" style="background:${d.color}"></span>
+        <span class="radar-legend-label">${d.label}</span>
+        <span class="radar-legend-count" style="color:${d.color}">${d.count} งาน <span style="color:#aaa;font-weight:500;font-size:12px">(${total ? Math.round(d.count / total * 100) : 0}%)</span></span>
+      </div>`).join('');
+
+  containerEl.innerHTML = `
+    <div class="radar-wrap">
+      <div class="radar-chart-holder">
+        <div class="radar-glow"></div>
+        <svg class="radar-svg" viewBox="0 0 300 300">
+          <defs>
+            <linearGradient id="radarFill" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7F77DD"/>
+              <stop offset="50%" stop-color="#D4537E"/>
+              <stop offset="100%" stop-color="#F0997B"/>
+            </linearGradient>
+          </defs>
+          ${gridPolys}
+          ${axisLines}
+          <g class="radar-data-group">
+            <polygon class="radar-data" points="${dataPts}"/>
+            ${dots}
+          </g>
+          ${labels}
+        </svg>
+      </div>
+      <div class="radar-legend">${legendHtml}</div>
     </div>`;
 }
 
@@ -2055,20 +2219,20 @@ function renderStats() {
   const monthLogs = logs.filter(l => isInSelectedMonth(l.date));
   const chartTitleEl = document.getElementById('stats-chart-title');
 
+  const chartWrapEl = document.getElementById('bar-chart');
   if (isCurrentUserAdmin()) {
-    // แอดมิน: กราฟแสดงยอดงานรวมของแต่ละคน (ใช้ role เป็นป้ายกำกับ) เฉพาะเดือนที่เลือกอยู่เท่านั้น
+    // แอดมิน: กราฟแสดงยอดงานรวมของแต่ละคน (ใช้ชื่อจริงของแต่ละคนเป็นป้ายกำกับ) เฉพาะเดือนที่เลือกอยู่เท่านั้น
     if (chartTitleEl) chartTitleEl.textContent = 'งานแต่ละคน (เดือนนี้)';
-    const roleCounts = {};
-    USERS.filter(u => !u.isAdmin).forEach(u => {
-      const roleLabel = u.role || 'ไม่ระบุ';
-      const cnt = monthLogs.filter(l => l.owner === u.name).length;
-      roleCounts[roleLabel] = (roleCounts[roleLabel] || 0) + cnt;
-    });
-    const bars = Object.entries(roleCounts).map(([label, count]) => ({ label, count }));
-    renderDonutChart(bars, document.getElementById('bar-chart'));
+    if (chartWrapEl) chartWrapEl.classList.add('donut-mode'); // ปลดข้อจำกัดความสูง 120px ของกราฟแท่ง ไม่ให้วงกลมล้นออกมา
+    const bars = USERS.filter(u => !u.isAdmin).map(u => ({
+      label: u.name.trim(),
+      count: monthLogs.filter(l => l.owner === u.name).length
+    }));
+    renderDonutChart(bars, chartWrapEl);
   } else {
     // ผู้ใช้ทั่วไป: กราฟงานแต่ละวัน (7 วันล่าสุด) เหมือนเดิม
     if (chartTitleEl) chartTitleEl.textContent = 'งานแต่ละวัน (7 วันล่าสุด)';
+    if (chartWrapEl) chartWrapEl.classList.remove('donut-mode');
     const days = [];
     for (let i = 6; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate() - i);
@@ -2088,31 +2252,38 @@ function renderStats() {
     }).join('');
   }
 
-  const statusCount = {};
-  monthLogs.forEach(l => statusCount[l.status] = (statusCount[l.status] || 0) + 1);
-  document.getElementById('status-breakdown').innerHTML = Object.entries(statusCount).length
-    ? Object.entries(statusCount).map(([s,n]) => `
-        <div class="mini-stat-row">
-          <span class="label"><span class="badge ${STATUS_BADGE[s]||''}">${s}</span></span>
-          <span class="value">${n} รายการ</span>
-        </div>`).join('')
-    : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูลในเดือนนี้</p>';
-  const chTitle = document.getElementById('client-hours-title');
+  const statusSection = document.getElementById('status-breakdown-section');
+  const adminRadarSection = document.getElementById('admin-radar-section');
+  const bottomSection = document.getElementById('client-hours-section');
   if (isCurrentUserAdmin()) {
-    // แอดมิน: แสดงยอดงานรวม "ทุกเดือน" (ทุกช่วงเวลา) แยกตาม role/พื้นที่รับผิดชอบของแต่ละคน
-    if (chTitle) chTitle.textContent = 'งานรวมทุกเดือน (แยกตามพื้นที่)';
+    // แอดมิน: ซ่อน "สรุปสถานะงาน" แล้วเอากราฟ "งานรวมทุกเดือน (แยกตามพื้นที่)" ขึ้นมาอยู่คอลัมน์ขวาแทน
+    if (statusSection) statusSection.style.display = 'none';
+    if (adminRadarSection) adminRadarSection.style.display = '';
+    if (bottomSection) bottomSection.style.display = 'none';
+
     const roleAllTime = {};
     USERS.filter(u => !u.isAdmin).forEach(u => {
       const roleLabel = u.role || 'ไม่ระบุ';
       const cnt = logs.filter(l => l.owner === u.name).length;
       roleAllTime[roleLabel] = (roleAllTime[roleLabel] || 0) + cnt;
     });
-    document.getElementById('client-hours').innerHTML = Object.entries(roleAllTime).length
-      ? Object.entries(roleAllTime).sort((a,b) => b[1]-a[1]).map(([r,n]) => `
-          <div class="mini-stat-row"><span class="label">${r}</span><span class="value">${n} งาน</span></div>`).join('')
-      : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูล</p>';
+    const radarData = Object.entries(roleAllTime).map(([label, count]) => ({ label, count }));
+    renderRadarChart(radarData, document.getElementById('client-hours-top'));
   } else {
-    if (chTitle) chTitle.textContent = 'งานต่อการไฟฟ้า';
+    if (statusSection) statusSection.style.display = '';
+    if (adminRadarSection) adminRadarSection.style.display = 'none';
+    if (bottomSection) bottomSection.style.display = '';
+
+    const statusCount = {};
+    monthLogs.forEach(l => statusCount[l.status] = (statusCount[l.status] || 0) + 1);
+    document.getElementById('status-breakdown').innerHTML = Object.entries(statusCount).length
+      ? Object.entries(statusCount).map(([s,n]) => `
+          <div class="mini-stat-row">
+            <span class="label"><span class="badge ${STATUS_BADGE[s]||''}">${s}</span></span>
+            <span class="value">${n} รายการ</span>
+          </div>`).join('')
+      : '<p style="color:#aaa;font-size:13px;padding:12px 0">ยังไม่มีข้อมูลในเดือนนี้</p>';
+
     const ccount = {};
     monthLogs.forEach(l => { const c = l.client || 'ไม่ระบุ'; ccount[c] = (ccount[c] || 0) + 1; });
     document.getElementById('client-hours').innerHTML = Object.entries(ccount).length

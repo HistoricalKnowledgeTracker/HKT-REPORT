@@ -234,7 +234,7 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 .bar-cnt{font-size:10px;color:#185FA5;font-weight:600}
 
 /* Donut chart (งานแต่ละคน — แบ่งสีตามพื้นที่/การไฟฟ้า) */
-.donut-wrap{display:flex;align-items:flex-start;gap:30px;flex-wrap:wrap;padding:10px 4px}
+.donut-wrap{display:flex;align-items:center;gap:30px;flex-wrap:wrap;padding:10px 4px}
 .donut-chart-wrap{position:relative;flex-shrink:0;width:190px;height:190px;transition:transform .25s}
 .donut-chart-wrap:hover{transform:scale(1.03)}
 @keyframes donutGlowSpin{to{transform:rotate(360deg)}}
@@ -255,8 +255,8 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 .donut-legend-pct{font-weight:500;color:#aaa;font-size:12px}
 
 /* Radar / spider chart (งานรวมทุกเดือน แยกตามพื้นที่ — สำหรับแอดมิน) */
-.radar-wrap{display:flex;align-items:flex-start;gap:64px;flex-wrap:wrap;padding:10px 4px}
-.radar-chart-holder{position:relative;flex-shrink:0;width:270px;height:270px}
+.radar-wrap{display:flex;align-items:center;gap:78px;flex-wrap:wrap;padding:14px 6px}
+.radar-chart-holder{position:relative;flex-shrink:0;width:310px;height:310px}
 .radar-glow{position:absolute;inset:12%;border-radius:50%;filter:blur(26px);opacity:.32;background:conic-gradient(from 0deg,#7F77DD,#D4537E,#F0997B,#7F77DD);animation:donutGlowSpin 16s linear infinite,donutGlowPulse 3.6s ease-in-out infinite;pointer-events:none}
 .radar-svg{position:relative;width:100%;height:100%;overflow:visible}
 .radar-grid{fill:none;stroke:#e9defa;stroke-width:1}
@@ -268,11 +268,11 @@ body::before{content:'';position:fixed;bottom:0;left:0;width:100%;height:200px;b
 @keyframes radarBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
 .radar-dot{filter:drop-shadow(0 0 3px rgba(212,83,126,.5))}
 .radar-label{font-size:12px;font-weight:700;fill:#4A3B68}
-.radar-legend{flex:0 1 380px;min-width:210px;max-width:380px;display:flex;flex-direction:column;gap:10px}
-.radar-legend-row{display:flex;align-items:center;gap:9px;font-size:14px;opacity:0;animation:blockEnter .4s cubic-bezier(0.22,1,0.36,1) forwards}
-.radar-legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.radar-legend{flex:1 1 420px;min-width:230px;max-width:460px;display:flex;flex-direction:column;gap:13px}
+.radar-legend-row{display:flex;align-items:center;gap:10px;font-size:15.5px;opacity:0;animation:blockEnter .4s cubic-bezier(0.22,1,0.36,1) forwards}
+.radar-legend-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
 .radar-legend-label{flex:1;color:#4A3B68;font-weight:500;line-height:1.3}
-.radar-legend-count{font-weight:700;font-size:14px;white-space:nowrap}
+.radar-legend-count{font-weight:700;font-size:15.5px;white-space:nowrap}
 
 /* Modal */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:none;align-items:center;justify-content:center;z-index:200}
